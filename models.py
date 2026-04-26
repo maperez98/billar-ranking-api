@@ -2,8 +2,6 @@ from pydantic import BaseModel, Field
 from datetime import date
 from nivel_Jugador import NivelJugador
 
-
-
 class Jugador(BaseModel):
     id: int = Field(..., description="Id del jugador")
     nombre: str = Field(..., min_length=2, max_length=50)
@@ -26,4 +24,3 @@ class Ranking(BaseModel):
     puntos: int = Field(0, ge=0)
     posicion: int = Field(..., ge=1)
 
-    #Prueba2 github
