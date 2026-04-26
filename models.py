@@ -5,7 +5,7 @@ from nivel_Jugador import NivelJugador
 class Jugador(BaseModel):
     id: int = Field(..., description="Id del jugador")
     nombre: str = Field(..., min_length=2, max_length=50)
-    edad: int = Field(..., ge=10, le=100)
+    edad: int = Field(..., ge=18, le=100)
     pais: str = Field(..., min_length=2, max_length=50)
     nivel: NivelJugador
 
