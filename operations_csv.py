@@ -1,10 +1,11 @@
 import csv
-from models import Jugador
-from models import Partida
-
+from models import Jugador, Partida
 
 FILE_JUGADORES = "jugadores.csv"
 FILE_PARTIDAS = "partidas.csv"
+FILE_RANKING = "rankings.csv"
+
+#     MODELO JUGADORES CRUD
 
 def crear_jugador(jugador: Jugador):
     archivo_existe = False
@@ -111,6 +112,8 @@ def eliminar_jugador(id: int):
     else:
         return {"mensaje": "jugador no encontrado", "id": id}
 
+
+#     MODELO PARTIDAS:
 
 def crear_partida(partida: Partida):
     jugadores = obtener_jugadores()
@@ -231,3 +234,62 @@ def eliminar_partida(id: int):
         return {"mensaje": "partida eliminada", "id": id}
     else:
         return {"mensaje": "partida no encontrada", "id": id}
+
+#         MODELO RANKING : READ RANKING ES LOQ UE INTERESA, PORQUE  ESTAMOS HACIENDO CALCULOS
+
+def calcular_ranking():
+    partidas = obtener_partidas()
+    jugadores = obtener_jugadores()
+
+    puntos = {}
+    for j in jugadores:
+        puntos[j["id"]] = 0
+
+    for p in partidas:
+        puntos[p["ganador_id"]] = puntos.get(p["ganador_id"], 0) + 10
+
+    ranking_ordenado = sorted(puntos.items(), key=lambda x: x[1], reverse=True)
+
+    with open(FILE_RANKING, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(["posicion", "jugador_id", "puntos", "nombre"])
+
+        for posicion, (jugador_id, puntaje) in enumerate(ranking_ordenado, 1):
+            nombre = "Desconocido"
+            for j in jugadores:
+                if j["id"] == jugador_id:
+                    nombre = j["nombre"]
+                    break
+
+            writer.writerow([posicion, jugador_id, puntaje, nombre])
+
+    return {"mensaje": "ranking calculado y guardado"}
+
+
+def obtener_ranking():
+    ranking = []
+
+    try:
+        with open(FILE_RANKING, mode="r") as file:
+            reader = csv.reader(file)
+            next(reader)
+
+            for row in reader:
+                if len(row) == 4:
+                    ranking.append({
+                        "posicion": int(row[0]),
+                        "jugador_id": int(row[1]),
+                        "puntos": int(row[2]),
+                        "nombre": row[3]
+                    })
+    except FileNotFoundError:
+        return []
+    except StopIteration:
+        return []
+
+    return ranking
+
+
+def obtener_top_jugadores(limite=5):
+    ranking = obtener_ranking()
+    return ranking[:limite]
