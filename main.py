@@ -1,6 +1,6 @@
-from fastapi import FastAPI, HTTPException, status
+from fastapi import FastAPI
 from models import Jugador
-from operations import crear_jugador, obtener_jugadores, actualizar_jugador, eliminar_jugador
+from operations_csv import crear_jugador, obtener_jugadores, actualizar_jugador, eliminar_jugador
 
 app = FastAPI(title="Billar Ranking API")
 
