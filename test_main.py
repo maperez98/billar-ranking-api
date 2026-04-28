@@ -34,7 +34,7 @@ def test_actualizar_jugador():
 def test_eliminar_jugador():
     response = client.delete("/jugadores/10")
     assert response.status_code == 200
-    assert response.json()["mensaje"] == "jugador eliminado"
+    assert response.json()["mensaje"] == "jugador desactivado "
 
 
 def test_crear_partida():
