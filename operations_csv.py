@@ -19,20 +19,21 @@ def crear_jugador(jugador: Jugador):
         writer = csv.writer(file)
 
         if not archivo_existe:
-            writer.writerow(["id", "nombre", "edad", "pais", "nivel"])
+            writer.writerow(["id", "nombre", "edad", "pais", "nivel", "activo"])
 
         writer.writerow([
             jugador.id,
             jugador.nombre,
             jugador.edad,
             jugador.pais,
-            jugador.nivel.value if hasattr(jugador.nivel, 'value') else jugador.nivel
+            jugador.nivel.value if hasattr(jugador.nivel, 'value') else jugador.nivel,
+            jugador.activo
         ])
 
     return {"mensaje": "jugador creado", "id": jugador.id}
 
 
-def obtener_jugadores():
+def obtener_jugadores(solo_activos=True):
     jugadores = []
 
     try:
@@ -41,14 +42,29 @@ def obtener_jugadores():
             next(reader)
 
             for row in reader:
-                if len(row) == 5:
-                    jugadores.append({
+                if len(row) >= 6:
+                    jugador = {
                         "id": int(row[0]),
                         "nombre": row[1],
                         "edad": int(row[2]),
                         "pais": row[3],
-                        "nivel": row[4]
-                    })
+                        "nivel": row[4],
+                        "activo": row[5].lower() == 'true' if len(row) > 5 else True
+                    }
+                    if solo_activos and not jugador["activo"]:
+                        continue
+                    jugadores.append(jugador)
+                elif len(row) == 5:
+                    jugador = {
+                        "id": int(row[0]),
+                        "nombre": row[1],
+                        "edad": int(row[2]),
+                        "pais": row[3],
+                        "nivel": row[4],
+                        "activo": True
+                    }
+                    if solo_activos:
+                        jugadores.append(jugador)
     except FileNotFoundError:
         return []
     except StopIteration:
@@ -90,27 +106,32 @@ def actualizar_jugador(id: int, datos: dict):
 
 
 def eliminar_jugador(id: int):
-    jugadores = obtener_jugadores()
-    nuevos = [j for j in jugadores if j["id"] != id]
+    jugadores = obtener_jugadores(solo_activos=False)
+    actualizado = False
 
-    eliminado = len(nuevos) != len(jugadores)
+    for j in jugadores:
+        if j["id"] == id and j["activo"]:
+            j["activo"] = False
+            actualizado = True
+            break
 
-    if eliminado:
+    if actualizado:
         with open(FILE_JUGADORES, mode="w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["id", "nombre", "edad", "pais", "nivel"])
+            writer.writerow(["id", "nombre", "edad", "pais", "nivel", "activo"])
 
-            for j in nuevos:
+            for j in jugadores:
                 writer.writerow([
                     j["id"],
                     j["nombre"],
                     j["edad"],
                     j["pais"],
-                    j["nivel"]
+                    j["nivel"],
+                    j["activo"]
                 ])
-        return {"mensaje": "jugador eliminado", "id": id}
+        return {"mensaje": "jugador desactivado ", "id": id}
     else:
-        return {"mensaje": "jugador no encontrado", "id": id}
+        return {"mensaje": "jugador no encontrado o ya inactivo", "id": id}
 
 
 #     MODELO PARTIDAS:

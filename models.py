@@ -8,6 +8,7 @@ class Jugador(BaseModel):
     edad: int = Field(..., ge=18, le=100)
     pais: str = Field(..., min_length=2, max_length=50)
     nivel: NivelJugador
+    activo: bool = Field(default=True, description="Jugador activo o inactivo")
 
 
 class Partida(BaseModel):

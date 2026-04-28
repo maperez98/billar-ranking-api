@@ -21,6 +21,12 @@ def actualizar_jugador_endpoint(jugador_id: int, jugador: dict):
 def eliminar_jugador_endpoint(jugador_id: int):
     return eliminar_jugador(jugador_id)
 
+@app.get("/jugadores/inactivos")
+def listar_jugadores_inactivos():
+    jugadores = obtener_jugadores(solo_activos=False)
+    inactivos = [j for j in jugadores if not j["activo"]]
+    return inactivos
+
 @app.post("/partidas", status_code=status.HTTP_201_CREATED)
 def crear_nueva_partida(partida: Partida):
     return crear_partida(partida)
