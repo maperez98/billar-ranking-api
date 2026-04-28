@@ -2,7 +2,7 @@ from fastapi import FastAPI, status
 from models import Jugador, Partida
 from operations_csv import crear_jugador, obtener_jugadores, actualizar_jugador, eliminar_jugador
 from operations_csv import crear_partida, actualizar_partida, eliminar_partida, obtener_partidas
-from operations_csv import obtener_ranking, obtener_top_jugadores, calcular_ranking
+from operations_csv import obtener_ranking, obtener_top_jugadores, calcular_ranking, filtrar_jugadores
 app = FastAPI(title="Billar Ranking API")
 
 @app.post("/jugadores")
@@ -54,3 +54,7 @@ def calcular_nuevo_ranking():
 @app.get("/ranking/top/{limite}")
 def ver_top_jugadores(limite: int = 5):
     return obtener_top_jugadores(limite)
+
+@app.get("/jugadores/filtrar")
+def filtrar_jugadores_endpoint(atributo: str, valor: str):
+    return filtrar_jugadores(atributo, valor)

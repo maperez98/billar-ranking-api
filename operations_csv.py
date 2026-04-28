@@ -314,3 +314,23 @@ def obtener_ranking():
 def obtener_top_jugadores(limite=5):
     ranking = obtener_ranking()
     return ranking[:limite]
+
+
+def filtrar_jugadores(atributo: str, valor: str):
+    jugadores = obtener_jugadores()
+
+    atributos_validos = ["pais", "nivel", "nombre"]
+
+    if atributo not in atributos_validos:
+        return {"error": f"Atributo no valido. Use: {atributos_validos}"}
+
+    filtrados = []
+    for j in jugadores:
+        if atributo == "pais" and j["pais"].lower() == valor.lower():
+            filtrados.append(j)
+        elif atributo == "nivel" and j["nivel"].lower() == valor.lower():
+            filtrados.append(j)
+        elif atributo == "nombre" and valor.lower() in j["nombre"].lower():
+            filtrados.append(j)
+
+    return filtrados
