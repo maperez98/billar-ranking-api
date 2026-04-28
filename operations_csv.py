@@ -87,10 +87,9 @@ def actualizar_jugador(id: int, datos: dict):
             break
 
     if actualizado:
-
         with open(FILE_JUGADORES, mode="w", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow(["id", "nombre", "edad", "pais", "nivel"])
+            writer.writerow(["id", "nombre", "edad", "pais", "nivel", "activo"])
 
             for j in jugadores:
                 writer.writerow([
@@ -98,7 +97,8 @@ def actualizar_jugador(id: int, datos: dict):
                     j["nombre"],
                     j["edad"],
                     j["pais"],
-                    j["nivel"]
+                    j["nivel"],
+                    j["activo"]
                 ])
         return {"mensaje": "jugador actualizado", "id": id}
     else:
