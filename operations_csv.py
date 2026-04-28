@@ -334,3 +334,25 @@ def filtrar_jugadores(atributo: str, valor: str):
             filtrados.append(j)
 
     return filtrados
+
+
+def buscar_jugador_por_nombre(nombre: str):
+    jugadores = obtener_jugadores()
+
+    resultados = []
+    for j in jugadores:
+        if nombre.lower() in j["nombre"].lower():
+            resultados.append(j)
+
+    return resultados
+
+
+def buscar_jugador_por_pais(pais: str):
+    jugadores = obtener_jugadores()
+
+    resultados = []
+    for j in jugadores:
+        if pais.lower() == j["pais"].lower():
+            resultados.append(j)
+
+    return resultados
