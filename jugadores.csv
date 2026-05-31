@@ -5,4 +5,6 @@ id,nombre,edad,pais,nivel,activo
 4,andres,34,indio,principiante,True
 5,Rodrigo,45,Colombia,intermedio,True
 6,LUis,46,Venezolano,principiante,True
-10,Jugador Modificado,30,Colombia,principiante,False
+7,manuel,23,venezolano,principiante,False
+8,jose,30,colombiano,intermedio,True
+8,jose,30,colombiano,intermedio,True
