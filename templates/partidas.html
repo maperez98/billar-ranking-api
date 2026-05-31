@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Partidas</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <h1 class="title">🎱 Partidas</h1>
+        <table class="table is-fullwidth is-striped">
+            <thead><tr><th>ID</th><th>Jugador 1</th><th>Jugador 2</th><th>Ganador</th><th>Fecha</th></tr></thead>
+            <tbody>
+                {% for p in partidas %}
+                <tr>
+                    <td>{{ p.id }}</td><td>{{ p.jugador1_id }}</td>
+                    <td>{{ p.jugador2_id }}</td><td>{{ p.ganador_id }}</td><td>{{ p.fecha }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

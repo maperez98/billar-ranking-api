@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Billar Ranking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <h1 class="title">🎱 Ranking de Billar</h1>
+        {% if ranking %}
+        <table class="table is-fullwidth is-striped">
+            <thead><tr><th>Posición</th><th>Nombre</th><th>Puntos</th></tr></thead>
+            <tbody>
+                {% for r in ranking %}
+                <tr><td>#{{ r.posicion }}</td><td>{{ r.nombre }}</td><td>{{ r.puntos }}</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="subtitle has-text-grey">No hay ranking todavía.</p>
+        {% endif %}
+    </div>
+</section>
+</body>
+</html>

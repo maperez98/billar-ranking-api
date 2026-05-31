@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Jugadores</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+</head>
+<body>
+<section class="section">
+    <div class="container">
+        <h1 class="title">👤 Jugadores</h1>
+        <table class="table is-fullwidth is-striped">
+            <thead><tr><th>ID</th><th>Nombre</th><th>Edad</th><th>País</th><th>Nivel</th><th>Activo</th></tr></thead>
+            <tbody>
+                {% for j in jugadores %}
+                <tr>
+                    <td>{{ j.id }}</td><td>{{ j.nombre }}</td><td>{{ j.edad }}</td>
+                    <td>{{ j.pais }}</td><td>{{ j.nivel }}</td>
+                    <td>{{ "✅" if j.activo else "❌" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+</body>
+</html>

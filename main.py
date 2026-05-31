@@ -1,68 +1,117 @@
-from fastapi import FastAPI, status
-from models import Jugador, Partida
-from operations_csv import crear_jugador, obtener_jugadores, actualizar_jugador, eliminar_jugador
-from operations_csv import crear_partida, actualizar_partida, eliminar_partida, obtener_partidas
-from operations_csv import obtener_ranking, obtener_top_jugadores, calcular_ranking, filtrar_jugadores, buscar_jugador_por_pais, buscar_jugador_por_nombre
-app = FastAPI(title="Billar Ranking API")
+from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+from fastapi.staticfiles import StaticFiles
+from sqlmodel import Session
 
-@app.post("/jugadores")
-def crear_nuevo_jugador(jugador: Jugador):
-    return crear_jugador(jugador)
+from db import SessionDep, create_all_tables, get_session
+from models.jugador import JugadorBase, JugadorID, JugadorUpdate
+from models.partida import PartidaBase, PartidaID, PartidaUpdate, RankingID
 
-@app.get("/jugadores")
-def listar_jugadores():
-    return obtener_jugadores()
+from operations.operations_jugador import (
+    crear_jugador, obtener_jugadores, obtener_jugador_por_id,
+    actualizar_jugador, eliminar_jugador,
+    buscar_por_nombre, buscar_por_pais, filtrar_jugadores,
+)
+from operations.operations_partida import (
+    crear_partida, obtener_partidas, actualizar_partida, eliminar_partida,
+    calcular_ranking, obtener_ranking, obtener_top_jugadores,
+)
 
-@app.put("/jugadores/{jugador_id}")
-def actualizar_jugador_endpoint(jugador_id: int, jugador: dict):
-    return actualizar_jugador(jugador_id, jugador)
+app = FastAPI(title="Billar Ranking API 🎱", lifespan=create_all_tables)
 
-@app.delete("/jugadores/{jugador_id}")
-def eliminar_jugador_endpoint(jugador_id: int):
-    return eliminar_jugador(jugador_id)
+templates = Jinja2Templates(directory="templates")
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
-@app.get("/jugadores/inactivos")
-def listar_jugadores_inactivos():
-    jugadores = obtener_jugadores(solo_activos=False)
-    inactivos = [j for j in jugadores if not j["activo"]]
-    return inactivos
 
-@app.post("/partidas", status_code=status.HTTP_201_CREATED)
-def crear_nueva_partida(partida: Partida):
-    return crear_partida(partida)
 
-@app.get("/partidas")
-def listar_partidas():
-    return obtener_partidas()
+@app.get("/", response_class=HTMLResponse)
+async def home(request: Request, session: Session = Depends(get_session)):
+    ranking = obtener_ranking(session)
+    return templates.TemplateResponse(request, "ranking.html", {"ranking": ranking})
 
-@app.put("/partidas/{partida_id}")
-def actualizar_partida_endpoint(partida_id: int, datos: dict):
-    return actualizar_partida(partida_id, datos)
+@app.get("/jugadores-page", response_class=HTMLResponse)
+async def pagina_jugadores(request: Request, session: Session = Depends(get_session)):
+    jugadores = obtener_jugadores(session, solo_activos=False)
+    return templates.TemplateResponse(request, "jugadores.html", {"jugadores": jugadores})
 
-@app.delete("/partidas/{partida_id}")
-def eliminar_partida_endpoint(partida_id: int):
-    return eliminar_partida(partida_id)
+@app.get("/partidas-page", response_class=HTMLResponse)
+async def pagina_partidas(request: Request, session: Session = Depends(get_session)):
+    partidas  = obtener_partidas(session)
+    jugadores = obtener_jugadores(session, solo_activos=False)
+    return templates.TemplateResponse(request, "partidas.html", {
+        "partidas": partidas, "jugadores": jugadores
+    })
 
-@app.get("/ranking")
-def ver_ranking():
-    return obtener_ranking()
+
+
+@app.post("/jugadores", response_model=JugadorID)
+def api_crear_jugador(jugador: JugadorBase, session: SessionDep):
+    return crear_jugador(jugador, session)
+
+@app.get("/jugadores", response_model=list[JugadorID])
+def api_listar_jugadores(session: SessionDep):
+    return obtener_jugadores(session)
+
+@app.get("/jugadores/inactivos", response_model=list[JugadorID])
+def api_inactivos(session: SessionDep):
+    return obtener_jugadores(session, solo_activos=False)
+
+@app.get("/jugadores/filtrar", response_model=list[JugadorID])
+def api_filtrar(atributo: str, valor: str, session: SessionDep):
+    return filtrar_jugadores(atributo, valor, session)
+
+@app.get("/jugadores/buscar/nombre", response_model=list[JugadorID])
+def api_buscar_nombre(nombre: str, session: SessionDep):
+    return buscar_por_nombre(nombre, session)
+
+@app.get("/jugadores/buscar/pais", response_model=list[JugadorID])
+def api_buscar_pais(pais: str, session: SessionDep):
+    return buscar_por_pais(pais, session)
+
+@app.get("/jugadores/{id}", response_model=JugadorID)
+def api_obtener_jugador(id: int, session: SessionDep):
+    jugador = obtener_jugador_por_id(id, session)
+    if not jugador:
+        raise HTTPException(status_code=404, detail=f"Jugador {id} no encontrado")
+    return jugador
+
+@app.patch("/jugadores/{id}", response_model=JugadorID)
+def api_actualizar_jugador(id: int, datos: JugadorUpdate, session: SessionDep):
+    return actualizar_jugador(id, datos, session)
+
+@app.delete("/jugadores/{id}")
+def api_eliminar_jugador(id: int, session: SessionDep):
+    return eliminar_jugador(id, session)
+
+
+
+@app.post("/partidas", response_model=PartidaID)
+def api_crear_partida(partida: PartidaBase, session: SessionDep):
+    return crear_partida(partida, session)
+
+@app.get("/partidas", response_model=list[PartidaID])
+def api_listar_partidas(session: SessionDep):
+    return obtener_partidas(session)
+
+@app.patch("/partidas/{id}", response_model=PartidaID)
+def api_actualizar_partida(id: int, datos: PartidaUpdate, session: SessionDep):
+    return actualizar_partida(id, datos, session)
+
+@app.delete("/partidas/{id}")
+def api_eliminar_partida(id: int, session: SessionDep):
+    return eliminar_partida(id, session)
+
+
+
+@app.get("/ranking", response_model=list[RankingID])
+def api_ranking(session: SessionDep):
+    return obtener_ranking(session)
 
 @app.post("/ranking/calcular")
-def calcular_nuevo_ranking():
-    return calcular_ranking()
+def api_calcular_ranking(session: SessionDep):
+    return calcular_ranking(session)
 
-@app.get("/ranking/top/{limite}")
-def ver_top_jugadores(limite: int = 5):
-    return obtener_top_jugadores(limite)
-
-@app.get("/jugadores/filtrar")
-def filtrar_jugadores_endpoint(atributo: str, valor: str):
-    return filtrar_jugadores(atributo, valor)
-
-@app.get("/jugadores/buscar/nombre")
-def buscar_por_nombre(nombre: str):
-    return buscar_jugador_por_nombre(nombre)
-
-@app.get("/jugadores/buscar/pais")
-def buscar_por_pais(pais: str):
-    return buscar_jugador_por_pais(pais)
+@app.get("/ranking/top/{limite}", response_model=list[RankingID])
+def api_top(limite: int, session: SessionDep):
+    return obtener_top_jugadores(limite, session)
