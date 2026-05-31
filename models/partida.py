@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field
 from datetime import date
 from typing import Optional
 
-
+#cambios
 class PartidaBase(SQLModel):
     jugador1_id: int = Field(..., description="ID del primer jugador")
     jugador2_id: int = Field(..., description="ID del segundo jugador")
