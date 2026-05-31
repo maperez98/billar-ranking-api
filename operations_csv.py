@@ -14,7 +14,7 @@ def crear_jugador(jugador: Jugador):
             archivo_existe = True
     except FileNotFoundError:
         pass
-# hol
+# holaaa
     with open(FILE_JUGADORES, mode="a", newline="") as file:
         writer = csv.writer(file)
 
