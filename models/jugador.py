@@ -10,6 +10,9 @@ class JugadorBase(SQLModel):
     nivel: NivelJugador = Field(...)
     activo: bool = Field(default=True)
 
+    foto_url: Optional[str] = Field(default=None)  # Para el link de Supabase
+    categoria_id: Optional[int] = Field(default=None, foreign_key="categoria.id")
+
 
 class JugadorID(JugadorBase, table=True):
     __tablename__ = "jugadores"
@@ -22,3 +25,5 @@ class JugadorUpdate(SQLModel):
     pais: Optional[str] = Field(default=None, min_length=2, max_length=50)
     nivel: Optional[NivelJugador] = Field(default=None)
     activo: Optional[bool] = Field(default=None)
+    foto_url: Optional[str] = Field(default=None)
+    categoria_id: Optional[int] = Field(default=None)
