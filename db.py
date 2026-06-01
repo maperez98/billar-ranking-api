@@ -14,13 +14,10 @@ engine = create_engine(neon_db, echo=True)
 
 @asynccontextmanager
 async def create_all_tables(app: FastAPI):
-    try:
-        if os.getenv("ENV") == "dev":
-            print("⏳ Intentando conectar y crear tablas en Neon...")
-            SQLModel.metadata.create_all(engine)
-            print(" Tablas sincronizadas con éxito")
-    except Exception as e:
-        print(f" Error fatal de base de datos: {e}")
+
+    print("⏳ Intentando conectar y crear tablas en Neon...")
+    SQLModel.metadata.create_all(engine)
+    print(" Tablas sincronizadas con éxito")
     yield
 
 def get_session() -> Session:
