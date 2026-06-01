@@ -71,6 +71,10 @@ def api_buscar_nombre(nombre: str, session: SessionDep):
 def api_buscar_pais(pais: str, session: SessionDep):
     return buscar_por_pais(pais, session)
 
+@app.get("/jugadores/nuevo", response_class=HTMLResponse)
+async def pagina_registro(request: Request):
+    return templates.TemplateResponse(request, "registro_jugador.html", {})
+
 @app.get("/jugadores/{id}", response_model=JugadorID)
 def api_obtener_jugador(id: int, session: SessionDep):
     jugador = obtener_jugador_por_id(id, session)
@@ -78,9 +82,6 @@ def api_obtener_jugador(id: int, session: SessionDep):
         raise HTTPException(status_code=404, detail=f"Jugador {id} no encontrado")
     return jugador
 
-@app.get("/jugadores/nuevo", response_class=HTMLResponse)
-async def pagina_registro(request: Request):
-    return templates.TemplateResponse(request, "registro_jugador.html", {})
 
 @app.patch("/jugadores/{id}", response_model=JugadorID)
 def api_actualizar_jugador(id: int, datos: JugadorUpdate, session: SessionDep):
