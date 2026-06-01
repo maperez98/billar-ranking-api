@@ -32,12 +32,12 @@ async def home(request: Request, session: Session = Depends(get_session)):
     ranking = obtener_ranking(session)
     return templates.TemplateResponse(request, "ranking.html", {"ranking": ranking})
 
-@app.get("/jugadores-page", response_class=HTMLResponse)
+@app.get("/jugadores-pagina", response_class=HTMLResponse)
 async def pagina_jugadores(request: Request, session: Session = Depends(get_session)):
     jugadores = obtener_jugadores(session, solo_activos=False)
     return templates.TemplateResponse(request, "jugadores.html", {"jugadores": jugadores})
 
-@app.get("/partidas-page", response_class=HTMLResponse)
+@app.get("/partidas-pagina", response_class=HTMLResponse)
 async def pagina_partidas(request: Request, session: Session = Depends(get_session)):
     partidas  = obtener_partidas(session)
     jugadores = obtener_jugadores(session, solo_activos=False)
