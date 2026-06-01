@@ -144,3 +144,7 @@ async def global_exception_handler(request: Request, exc: Exception):
         "request": request,
         "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
     })
+
+@app.get("/jugadores/nuevo", response_class=HTMLResponse)
+async def pagina_registro(request: Request):
+    return templates.TemplateResponse(request, "registro_jugador.html", {})

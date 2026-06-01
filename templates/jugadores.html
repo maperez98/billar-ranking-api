@@ -1,76 +1,23 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestión de Jugadores</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-</head>
-<body>
 <section class="section">
     <div class="container">
         <h1 class="title">Lista de Jugadores</h1>
-
         <div class="field mb-5">
             <input class="input" type="text" id="buscador" placeholder="Buscar jugador por nombre...">
         </div>
-
         <div class="columns is-multiline" id="lista-jugadores">
             {% for j in jugadores %}
             <div class="column is-one-quarter jugador-card">
                 <div class="card">
-                    <div class="card-image">
-                        <figure class="image is-4by3">
-                            <img src="{{ j.foto_url or 'https://bulma.io/images/placeholders/1280x960.png' }}" alt="Foto">
-                        </figure>
-                    </div>
+                    <div class="card-image"><figure class="image is-4by3"><img src="{{ j.foto_url or 'https://via.placeholder.com/300' }}"></figure></div>
                     <div class="card-content">
                         <p class="title is-4">{{ j.nombre }}</p>
                         <p class="subtitle is-6">País: {{ j.pais }} | Edad: {{ j.edad }}</p>
-                        <div class="content">
-                            Nivel: <strong>{{ j.nivel }}</strong><br>
-                            Estado: {{ "BIEN" if j.activo else "MAL" }}
-                        </div>
+                        <div class="content">Nivel: <strong>{{ j.nivel }}</strong><br>Estado: {{ "BIEN" if j.activo else "MAL" }}</div>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
-
-        <hr>
-
-        <h2 class="subtitle">Registrar Nuevo Jugador</h2>
-        <form action="/jugadores/con-foto" method="post" enctype="multipart/form-data" class="box">
-            <div class="field">
-                <label class="label">Nombre</label>
-                <input class="input" type="text" name="nombre" required>
-            </div>
-            <div class="field">
-                <label class="label">Nivel</label>
-                <div class="select is-fullwidth">
-                    <select name="nivel">
-                        <option value="principiante">Principiante</option>
-                        <option value="intermedio">Intermedio</option>
-                        <option value="profesional">Profesional</option>
-                    </select>
-                </div>
-            </div>
-            <div class="field">
-                <label class="label">Foto</label>
-                <input class="input" type="file" name="foto" accept="image/*" required>
-            </div>
-            <button type="submit" class="button is-primary">Registrar</button>
-        </form>
+        <a href="/jugadores/nuevo" class="button is-link mt-5">Registrar nuevo jugador</a>
     </div>
 </section>
-
-<script>
-    document.getElementById('buscador').addEventListener('keyup', function() {
-        let busqueda = this.value.toLowerCase();
-        document.querySelectorAll('.jugador-card').forEach(card => {
-            let nombre = card.querySelector('.title').textContent.toLowerCase();
-            card.style.display = nombre.includes(busqueda) ? '' : 'none';
-        });
-    });
-</script>
-</body>
-</html>
