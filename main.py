@@ -78,6 +78,10 @@ def api_obtener_jugador(id: int, session: SessionDep):
         raise HTTPException(status_code=404, detail=f"Jugador {id} no encontrado")
     return jugador
 
+@app.get("/jugadores/nuevo", response_class=HTMLResponse)
+async def pagina_registro(request: Request):
+    return templates.TemplateResponse(request, "registro_jugador.html", {})
+
 @app.patch("/jugadores/{id}", response_model=JugadorID)
 def api_actualizar_jugador(id: int, datos: JugadorUpdate, session: SessionDep):
     return actualizar_jugador(id, datos, session)
@@ -145,6 +149,3 @@ async def global_exception_handler(request: Request, exc: Exception):
         "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
     })
 
-@app.get("/jugadores/nuevo", response_class=HTMLResponse)
-async def pagina_registro(request: Request):
-    return templates.TemplateResponse(request, "registro_jugador.html", {})
