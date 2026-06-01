@@ -2,29 +2,39 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Jugadores</title>
+    <title>Gestión de Jugadores</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
 </head>
 <body>
 <section class="section">
     <div class="container">
-        <h1 class="title">Jugadores</h1>
+        <h1 class="title">Lista de Jugadores</h1>
 
-        <table class="table is-fullwidth is-striped">
-            <thead><tr><th>ID</th><th>Nombre</th><th>Edad</th><th>País</th><th>Nivel</th><th>Activo</th></tr></thead>
-            <tbody>
-                {% for j in jugadores %}
-                <tr>
-                    <td>{{ j.id }}</td>
-                    <td>{{ j.nombre }}</td>
-                    <td>{{ j.edad }}</td>
-                    <td>{{ j.pais }}</td>
-                    <td>{{ j.nivel }}</td>
-                    <td>{{ "BIEN" if j.activo else "MAL" }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="field mb-5">
+            <input class="input" type="text" id="buscador" placeholder="Buscar jugador por nombre...">
+        </div>
+
+        <div class="columns is-multiline" id="lista-jugadores">
+            {% for j in jugadores %}
+            <div class="column is-one-quarter jugador-card">
+                <div class="card">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img src="{{ j.foto_url or 'https://bulma.io/images/placeholders/1280x960.png' }}" alt="Foto">
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <p class="title is-4">{{ j.nombre }}</p>
+                        <p class="subtitle is-6">País: {{ j.pais }} | Edad: {{ j.edad }}</p>
+                        <div class="content">
+                            Nivel: <strong>{{ j.nivel }}</strong><br>
+                            Estado: {{ "BIEN" if j.activo else "MAL" }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
 
         <hr>
 
@@ -35,24 +45,32 @@
                 <input class="input" type="text" name="nombre" required>
             </div>
             <div class="field">
-                <label class="label">Edad</label>
-                <input class="input" type="number" name="edad" required>
-            </div>
-            <div class="field">
-                <label class="label">País</label>
-                <input class="input" type="text" name="pais" required>
-            </div>
-            <div class="field">
                 <label class="label">Nivel</label>
-                <input class="input" type="text" name="nivel" required>
+                <div class="select is-fullwidth">
+                    <select name="nivel">
+                        <option value="principiante">Principiante</option>
+                        <option value="intermedio">Intermedio</option>
+                        <option value="profesional">Profesional</option>
+                    </select>
+                </div>
             </div>
             <div class="field">
                 <label class="label">Foto</label>
-                <input class="file" type="file" name="foto" accept="image/*" required>
+                <input class="input" type="file" name="foto" accept="image/*" required>
             </div>
-            <button type="submit" class="button is-primary">Guardar Jugador</button>
+            <button type="submit" class="button is-primary">Registrar</button>
         </form>
     </div>
 </section>
+
+<script>
+    document.getElementById('buscador').addEventListener('keyup', function() {
+        let busqueda = this.value.toLowerCase();
+        document.querySelectorAll('.jugador-card').forEach(card => {
+            let nombre = card.querySelector('.title').textContent.toLowerCase();
+            card.style.display = nombre.includes(busqueda) ? '' : 'none';
+        });
+    });
+</script>
 </body>
 </html>

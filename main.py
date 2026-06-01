@@ -6,9 +6,9 @@ from sqlmodel import Session
 
 
 from db import SessionDep, create_all_tables, get_session
-from models.jugador import JugadorBase, JugadorID, JugadorUpdate, NivelJugador
+from models.jugador import JugadorBase, JugadorID, JugadorUpdate
 from models.partida import PartidaBase, PartidaID, PartidaUpdate, RankingID
-from operations.operations_jugador import subir_foto_a_storage, crear_jugador
+
 
 from operations.operations_jugador import (
     crear_jugador, obtener_jugadores, obtener_jugador_por_id,
@@ -133,3 +133,14 @@ async def api_crear_jugador_con_foto(
 
     datos_jugador = JugadorBase(nombre=nombre, edad=edad, pais=pais, nivel=nivel)
     return crear_jugador(datos_jugador, session, url_foto=url_foto)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+
+    print(f"Error detectado: {exc}")
+
+    return templates.TemplateResponse("error.html", {
+        "request": request,
+        "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
+    })
