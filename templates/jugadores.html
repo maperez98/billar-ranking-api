@@ -8,19 +8,50 @@
 <body>
 <section class="section">
     <div class="container">
-        <h1 class="title"> Jugadores</h1>
+        <h1 class="title">Jugadores</h1>
+
         <table class="table is-fullwidth is-striped">
             <thead><tr><th>ID</th><th>Nombre</th><th>Edad</th><th>País</th><th>Nivel</th><th>Activo</th></tr></thead>
             <tbody>
                 {% for j in jugadores %}
                 <tr>
-                    <td>{{ j.id }}</td><td>{{ j.nombre }}</td><td>{{ j.edad }}</td>
-                    <td>{{ j.pais }}</td><td>{{ j.nivel }}</td>
-                    <td>{{ "✅" if j.activo else "❌" }}</td>
+                    <td>{{ j.id }}</td>
+                    <td>{{ j.nombre }}</td>
+                    <td>{{ j.edad }}</td>
+                    <td>{{ j.pais }}</td>
+                    <td>{{ j.nivel }}</td>
+                    <td>{{ BIEN" if j.activo else "MAL" }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
+
+        <hr>
+
+        <h2 class="subtitle">Registrar Nuevo Jugador</h2>
+        <form action="/jugadores/con-foto" method="post" enctype="multipart/form-data" class="box">
+            <div class="field">
+                <label class="label">Nombre</label>
+                <input class="input" type="text" name="nombre" required>
+            </div>
+            <div class="field">
+                <label class="label">Edad</label>
+                <input class="input" type="number" name="edad" required>
+            </div>
+            <div class="field">
+                <label class="label">País</label>
+                <input class="input" type="text" name="pais" required>
+            </div>
+            <div class="field">
+                <label class="label">Nivel</label>
+                <input class="input" type="text" name="nivel" required>
+            </div>
+            <div class="field">
+                <label class="label">Foto</label>
+                <input class="file" type="file" name="foto" accept="image/*" required>
+            </div>
+            <button type="submit" class="button is-primary">Guardar Jugador</button>
+        </form>
     </div>
 </section>
 </body>

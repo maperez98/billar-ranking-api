@@ -1,17 +1,19 @@
-from fastapi import FastAPI, HTTPException, Request, Depends
+from fastapi import FastAPI, HTTPException, Request, Depends, Form, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
 
+
 from db import SessionDep, create_all_tables, get_session
-from models.jugador import JugadorBase, JugadorID, JugadorUpdate
+from models.jugador import JugadorBase, JugadorID, JugadorUpdate, NivelJugador
 from models.partida import PartidaBase, PartidaID, PartidaUpdate, RankingID
+from operations.operations_jugador import subir_foto_a_storage, crear_jugador
 
 from operations.operations_jugador import (
     crear_jugador, obtener_jugadores, obtener_jugador_por_id,
     actualizar_jugador, eliminar_jugador,
-    buscar_por_nombre, buscar_por_pais, filtrar_jugadores,
+    buscar_por_nombre, buscar_por_pais, filtrar_jugadores,subir_foto_a_storage
 )
 from operations.operations_partida import (
     crear_partida, obtener_partidas, actualizar_partida, eliminar_partida,
@@ -115,3 +117,19 @@ def api_calcular_ranking(session: SessionDep):
 @app.get("/ranking/top/{limite}", response_model=list[RankingID])
 def api_top(limite: int, session: SessionDep):
     return obtener_top_jugadores(limite, session)
+
+
+@app.post("/jugadores/con-foto")
+async def api_crear_jugador_con_foto(
+        nombre: str = Form(...),
+        edad: int = Form(...),
+        pais: str = Form(...),
+        nivel: str = Form(...),
+        foto: UploadFile = File(...),
+        session: Session = Depends(get_session)
+):
+    contenido = await foto.read()
+    url_foto = subir_foto_a_storage(contenido, foto.filename)
+
+    datos_jugador = JugadorBase(nombre=nombre, edad=edad, pais=pais, nivel=nivel)
+    return crear_jugador(datos_jugador, session, url_foto=url_foto)

@@ -2,14 +2,18 @@ from sqlalchemy.exc import NoResultFound
 from sqlmodel import Session, select
 from fastapi import HTTPException
 from models.jugador import JugadorBase, JugadorID, JugadorUpdate
+from supabase_client import supabase
 
+def crear_jugador(jugador_data, session, url_foto=None):
 
-def crear_jugador(jugador: JugadorBase, session: Session):
-    nuevo = JugadorID.model_validate(jugador)
-    session.add(nuevo)
+    nuevo_jugador = JugadorID.model_validate(jugador_data)
+    if url_foto:
+        nuevo_jugador.foto_url = url_foto
+
+    session.add(nuevo_jugador)
     session.commit()
-    session.refresh(nuevo)
-    return nuevo
+    session.refresh(nuevo_jugador)
+    return nuevo_jugador
 
 
 def obtener_jugadores(session: Session, solo_activos: bool = True):
@@ -81,3 +85,19 @@ def filtrar_jugadores(atributo: str, valor: str, session: Session):
     elif atributo == "nombre":
         query = query.where(JugadorID.nombre.ilike(f"%{valor}%"))
     return session.exec(query).all()
+
+from supabase_client import supabase
+
+def subir_foto_a_storage(file_content, filename: str):
+    try:
+
+        supabase.storage.from_("fotos-jugadores").upload(
+            path=filename,
+            file=file_content,
+            file_options={"content-type": "image/png"}
+        )
+
+        return supabase.storage.from_("fotos-jugadores").get_public_url(filename)
+    except Exception as e:
+        print(f"Error al subir: {e}")
+        return None
