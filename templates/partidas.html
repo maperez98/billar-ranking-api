@@ -5,14 +5,40 @@
     <div class="level-right"><a href="/partidas/nuevo" class="button is-primary">+ Nueva Partida</a></div>
 </div>
 
-<table class="table is-fullwidth is-striped">
-    <thead><tr><th>Jugador 1</th><th>Jugador 2</th><th>Ganador</th></tr></thead>
+<table class="table is-fullwidth is-striped is-hoverable is-narrow">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Jugador 1</th>
+            <th>Jugador 2</th>
+            <th>Ganador</th>
+        </tr>
+    </thead>
     <tbody>
         {% for p in partidas %}
         <tr>
-            <td>{{ p.jugador1_id }}</td>
-            <td>{{ p.jugador2_id }}</td>
-            <td>{{ p.ganador_id }}</td>
+            <td>{{ p.fecha }}</td>
+            <td>
+                {% for j in jugadores %}{% if j.id == p.jugador1_id %}
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <figure class="image is-32x32"><img class="is-rounded" src="{{ j.foto_url }}"></figure>
+                    <span>{{ j.nombre }}</span>
+                </div>
+                {% endif %}{% endfor %}
+            </td>
+            <td>
+                {% for j in jugadores %}{% if j.id == p.jugador2_id %}
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <figure class="image is-32x32"><img class="is-rounded" src="{{ j.foto_url }}"></figure>
+                    <span>{{ j.nombre }}</span>
+                </div>
+                {% endif %}{% endfor %}
+            </td>
+            <td>
+                {% for j in jugadores %}{% if j.id == p.ganador_id %}
+                <span class="tag is-success is-light">🏆 {{ j.nombre }}</span>
+                {% endif %}{% endfor %}
+            </td>
         </tr>
         {% endfor %}
     </tbody>
