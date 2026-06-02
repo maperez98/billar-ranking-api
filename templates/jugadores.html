@@ -1,21 +1,23 @@
-<{% extends "base.html" %}
+{% extends "base.html" %}
 {% block content %}
-<h1 class="title">Lista de Jugadores</h1>
+<h1 class="title">Nuestros Jugadores</h1>
+<a href="/jugadores/nuevo" class="button is-primary mb-5"><i class="fas fa-plus"></i> &nbsp; Nuevo Jugador</a>
+
 <div class="columns is-multiline">
     {% for j in jugadores %}
     <div class="column is-one-quarter">
         <div class="card">
-            <div class="card-image"><figure class="image is-4by3"><img src="{{ j.foto_url }}"></figure></div>
+            <div class="card-image">
+                <figure class="image is-4by3">
+                    <img src="{{ j.foto_url }}" alt="Foto de {{ j.nombre }}">
+                </figure>
+            </div>
             <div class="card-content">
                 <p class="title is-4">{{ j.nombre }}</p>
-                <div class="content">
-                    País: {{ j.pais }} <br>
-                    Estado: {% if j.activo %}<span class="tag is-success">Activo</span>{% else %}<span class="tag is-danger">Inactivo</span>{% endif %}
-                </div>
+                <p class="subtitle is-6">{{ j.pais }} | Nivel: {{ j.nivel }}</p>
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
-<a href="/jugadores/nuevo" class="button is-primary mt-5">+ Nuevo Jugador</a>
 {% endblock %}

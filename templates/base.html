@@ -2,29 +2,37 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Billar Ranking Pro</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <style>
-        body { background-color: #f4f4f4; }
-        .navbar { border-bottom: 4px solid #2ecc71; }
-        .hero.is-primary { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1549558775-4375a089060b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'); background-size: cover; }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Billar Pro | Sistema de Ranking</title>
 </head>
 <body>
-    <nav class="navbar is-black" role="navigation">
+    <nav class="navbar is-dark">
         <div class="navbar-brand">
-            <a class="navbar-item" href="/"><strong>BILLAR PRO</strong></a>
+            <a class="navbar-item" href="/"><strong><i class="fas fa-pool-8-ball"></i> BILLAR PRO</strong></a>
         </div>
         <div class="navbar-menu">
             <div class="navbar-start">
-                <a class="navbar-item" href="/">Ranking</a>
+                <a class="navbar-item" href="/ranking">Ranking</a>
                 <a class="navbar-item" href="/jugadores-pagina">Jugadores</a>
                 <a class="navbar-item" href="/partidas-pagina">Partidas</a>
             </div>
+            <div class="navbar-end">
+                <div class="navbar-item">
+                    <form action="/jugadores/buscar/nombre" method="get">
+                        <div class="field has-addons">
+                            <input class="input" type="text" name="nombre" placeholder="Buscar jugador...">
+                            <button class="button is-info">Buscar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </nav>
-    <main class="container p-5">
-        {% block content %}{% endblock %}
-    </main>
+    <section class="section">
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </section>
 </body>
 </html>
