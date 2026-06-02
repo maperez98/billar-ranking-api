@@ -92,10 +92,22 @@ def api_eliminar_jugador(id: int, session: SessionDep):
     return eliminar_jugador(id, session)
 
 
+@app.post("/partidas")
+def api_crear_partida(
+        jugador1_id: int = Form(...),
+        jugador2_id: int = Form(...),
+        ganador_id: int = Form(...),
+        session: Session = Depends(get_session)
+):
+    if ganador_id not in [jugador1_id, jugador2_id]:
+        raise HTTPException(status_code=400, detail="El ganador debe ser uno de los dos jugadores")
 
-@app.post("/partidas", response_model=PartidaID)
-def api_crear_partida(partida: PartidaBase, session: SessionDep):
-    return crear_partida(partida, session)
+    partida = PartidaBase(jugador1_id=jugador1_id, jugador2_id=jugador2_id, ganador_id=ganador_id)
+    crear_partida(partida, session)
+
+    calcular_ranking(session)
+
+    return RedirectResponse(url="/partidas-pagina", status_code=303)
 
 @app.get("/partidas", response_model=list[PartidaID])
 def api_listar_partidas(session: SessionDep):

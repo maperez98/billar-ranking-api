@@ -1,7 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<h1 class="title">Gestión de Partidas</h1>
-<table class="table is-fullwidth">
+<div class="level">
+    <div class="level-left"><h1 class="title">Gestión de Partidas</h1></div>
+    <div class="level-right"><a href="/partidas/nuevo" class="button is-primary">+ Nueva Partida</a></div>
+</div>
+
+<table class="table is-fullwidth is-striped">
     <thead><tr><th>Jugador 1</th><th>Jugador 2</th><th>Ganador</th></tr></thead>
     <tbody>
         {% for p in partidas %}
