@@ -21,7 +21,13 @@
                 {% for j in jugadores %}<option value="{{ j.id }}">{{ j.nombre }}</option>{% endfor %}
             </select></div>
         </div>
-        <button type="submit" class="button is-success is-fullwidth mt-4">Guardar Resultado</button>
+        <div class="field">
+            <label class="label">Fecha de la partida</label>
+            <div class="control">
+                <input class="input" type="date" name="fecha" required>
+            </div>
+        </div>
+        <button type="submit" class="button is-success is-fullwidth mt-4">Guardar Partida</button>
     </form>
 </div>
 {% endblock %}

@@ -4,6 +4,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
 from fastapi.responses import RedirectResponse
+from datetime import datetime
 
 from db import SessionDep, create_all_tables, get_session
 from models.jugador import JugadorBase, JugadorID, JugadorUpdate
@@ -93,21 +94,37 @@ def api_eliminar_jugador(id: int, session: SessionDep):
 
 
 @app.post("/partidas")
-def api_crear_partida(
+async def api_crear_partida(
+        request: Request,
         jugador1_id: int = Form(...),
         jugador2_id: int = Form(...),
         ganador_id: int = Form(...),
+        fecha: str = Form(...),  # Recibe la fecha del HTML
         session: Session = Depends(get_session)
 ):
-    if ganador_id not in [jugador1_id, jugador2_id]:
-        raise HTTPException(status_code=400, detail="El ganador debe ser uno de los dos jugadores")
+    try:
+        # 1. Convertir string a objeto date
+        fecha_obj = datetime.strptime(fecha, "%Y-%m-%d").date()
 
-    partida = PartidaBase(jugador1_id=jugador1_id, jugador2_id=jugador2_id, ganador_id=ganador_id)
-    crear_partida(partida, session)
+        # 2. Validación
+        if ganador_id not in [jugador1_id, jugador2_id]:
+            return templates.TemplateResponse("error.html", {"request": request,
+                                                             "mensaje": "El ganador debe ser uno de los dos jugadores."})
 
-    calcular_ranking(session)
+        # 3. Crear el modelo usando la fecha convertida
+        partida = PartidaBase(
+            jugador1_id=jugador1_id,
+            jugador2_id=jugador2_id,
+            ganador_id=ganador_id,
+            fecha=fecha_obj
+        )
 
-    return RedirectResponse(url="/partidas-pagina", status_code=303)
+        crear_partida(partida, session)
+        calcular_ranking(session)
+
+        return RedirectResponse(url="/partidas-pagina", status_code=303)
+    except Exception as e:
+        return templates.TemplateResponse("error.html", {"request": request, "mensaje": f"Error técnico: {str(e)}"})
 
 @app.get("/partidas", response_model=list[PartidaID])
 def api_listar_partidas(session: SessionDep):
