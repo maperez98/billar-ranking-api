@@ -126,33 +126,6 @@ def api_top(limite: int, session: SessionDep):
 
 @app.post("/jugadores/con-foto")
 async def api_crear_jugador_con_foto(
-        nombre: str = Form(...),
-        edad: int = Form(...),
-        pais: str = Form(...),
-        nivel: str = Form(...),
-        foto: UploadFile = File(...),
-        session: Session = Depends(get_session)
-):
-    contenido = await foto.read()
-    url_foto = subir_foto_a_storage(contenido, foto.filename)
-
-    datos_jugador = JugadorBase(nombre=nombre, edad=edad, pais=pais, nivel=nivel)
-    return crear_jugador(datos_jugador, session, url_foto=url_foto)
-
-
-@app.exception_handler(Exception)
-async def global_exception_handler(request: Request, exc: Exception):
-
-    print(f"Error detectado: {exc}")
-
-    return templates.TemplateResponse("error.html", {
-        "request": request,
-        "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
-    })
-
-
-@app.post("/jugadores/con-foto")
-async def api_crear_jugador_con_foto(
         request: Request,
         nombre: str = Form(...),
         edad: int = Form(...),
@@ -176,3 +149,16 @@ async def api_crear_jugador_con_foto(
             "request": request,
             "mensaje": f"Error al registrar: {str(e)}"
         })
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+
+    print(f"Error detectado: {exc}")
+
+    return templates.TemplateResponse("error.html", {
+        "request": request,
+        "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
+    })
+
+
