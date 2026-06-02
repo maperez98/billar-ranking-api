@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Billar Ranking Pro</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
+    <style>
+        body { background-color: #f4f4f4; }
+        .navbar { border-bottom: 4px solid #2ecc71; }
+        .hero.is-primary { background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1549558775-4375a089060b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'); background-size: cover; }
+    </style>
+</head>
+<body>
+    <nav class="navbar is-black" role="navigation">
+        <div class="navbar-brand">
+            <a class="navbar-item" href="/"><strong>BILLAR PRO</strong></a>
+        </div>
+        <div class="navbar-menu">
+            <div class="navbar-start">
+                <a class="navbar-item" href="/">Ranking</a>
+                <a class="navbar-item" href="/jugadores-pagina">Jugadores</a>
+                <a class="navbar-item" href="/partidas-pagina">Partidas</a>
+            </div>
+        </div>
+    </nav>
+    <main class="container p-5">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

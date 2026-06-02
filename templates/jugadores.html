@@ -1,23 +1,21 @@
-<section class="section">
-    <div class="container">
-        <h1 class="title">Lista de Jugadores</h1>
-        <div class="field mb-5">
-            <input class="input" type="text" id="buscador" placeholder="Buscar jugador por nombre...">
-        </div>
-        <div class="columns is-multiline" id="lista-jugadores">
-            {% for j in jugadores %}
-            <div class="column is-one-quarter jugador-card">
-                <div class="card">
-                    <div class="card-image"><figure class="image is-4by3"><img src="{{ j.foto_url or 'https://via.placeholder.com/300' }}"></figure></div>
-                    <div class="card-content">
-                        <p class="title is-4">{{ j.nombre }}</p>
-                        <p class="subtitle is-6">País: {{ j.pais }} | Edad: {{ j.edad }}</p>
-                        <div class="content">Nivel: <strong>{{ j.nivel }}</strong><br>Estado: {{ "BIEN" if j.activo else "MAL" }}</div>
-                    </div>
+<{% extends "base.html" %}
+{% block content %}
+<h1 class="title">Lista de Jugadores</h1>
+<div class="columns is-multiline">
+    {% for j in jugadores %}
+    <div class="column is-one-quarter">
+        <div class="card">
+            <div class="card-image"><figure class="image is-4by3"><img src="{{ j.foto_url }}"></figure></div>
+            <div class="card-content">
+                <p class="title is-4">{{ j.nombre }}</p>
+                <div class="content">
+                    País: {{ j.pais }} <br>
+                    Estado: {% if j.activo %}<span class="tag is-success">Activo</span>{% else %}<span class="tag is-danger">Inactivo</span>{% endif %}
                 </div>
             </div>
-            {% endfor %}
         </div>
-        <a href="/jugadores/nuevo" class="button is-link mt-5">Registrar nuevo jugador</a>
     </div>
-</section>
+    {% endfor %}
+</div>
+<a href="/jugadores/nuevo" class="button is-primary mt-5">+ Nuevo Jugador</a>
+{% endblock %}
