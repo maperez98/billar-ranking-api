@@ -3,7 +3,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlmodel import Session
-
+from fastapi.responses import RedirectResponse
 
 from db import SessionDep, create_all_tables, get_session
 from models.jugador import JugadorBase, JugadorID, JugadorUpdate
@@ -150,3 +150,29 @@ async def global_exception_handler(request: Request, exc: Exception):
         "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
     })
 
+
+@app.post("/jugadores/con-foto")
+async def api_crear_jugador_con_foto(
+        request: Request,
+        nombre: str = Form(...),
+        edad: int = Form(...),
+        pais: str = Form(...),
+        nivel: str = Form(...),
+        foto: UploadFile = File(...),
+        session: Session = Depends(get_session)
+):
+    try:
+        contenido = await foto.read()
+        url_foto = subir_foto_a_storage(contenido, foto.filename)
+
+        datos_jugador = JugadorBase(nombre=nombre, edad=edad, pais=pais, nivel=nivel)
+
+        crear_jugador(datos_jugador, session, url_foto=url_foto)
+
+        return RedirectResponse(url="/jugadores-pagina", status_code=303)
+
+    except Exception as e:
+        return templates.TemplateResponse("error.html", {
+            "request": request,
+            "mensaje": f"Error al registrar: {str(e)}"
+        })
