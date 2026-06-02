@@ -1,64 +1,86 @@
 {% extends "base.html" %}
+{% block title %}Nuevo Jugador — Billar Pro{% endblock %}
+
 {% block content %}
-<div class="box" style="max-width: 600px; margin: 0 auto;">
-    <h1 class="title has-text-centered">Registrar Jugador</h1>
+<div class="columns is-centered">
+    <div class="column is-6">
+        <div class="card">
+            <div class="card-content">
+                <p class="title is-4">
+                    <span class="icon"><i class="fas fa-user-plus"></i></span> Registrar Jugador
+                </p>
 
-    <form action="/jugadores/con-foto" method="post" enctype="multipart/form-data">
+                {% if error %}
+                <div class="notification is-danger">{{ error }}</div>
+                {% endif %}
 
-        <div class="field">
-            <label class="label">Nombre del Jugador</label>
-            <div class="control">
-                <input class="input" type="text" name="nombre" placeholder="Ej: Juan Pérez" required>
+                <form method="post" action="/jugadores/con-foto" enctype="multipart/form-data">
+                    <div class="field">
+                        <label class="label">Nombre *</label>
+                        <div class="control">
+                            <input class="input" type="text" name="nombre"
+                                   placeholder="Ej: Carlos Rodríguez" required minlength="2" maxlength="50">
+                        </div>
+                    </div>
+
+                    <div class="columns">
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">Edad *</label>
+                                <div class="control">
+                                    <input class="input" type="number" name="edad"
+                                           placeholder="18-100" min="18" max="100" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="column">
+                            <div class="field">
+                                <label class="label">País *</label>
+                                <div class="control">
+                                    <input class="input" type="text" name="pais"
+                                           placeholder="Ej: Colombia" required minlength="2" maxlength="50">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Nivel *</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select name="nivel" required>
+                                    <option value="" disabled selected>Selecciona un nivel</option>
+                                    <option value="principiante">🟢 Principiante</option>
+                                    <option value="intermedio">🔵 Intermedio</option>
+                                    <option value="profesional">🔴 Profesional</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Foto del jugador</label>
+                        <div class="control">
+                            <input class="input" type="file" name="foto"
+                                   accept="image/jpeg,image/png,image/webp">
+                        </div>
+                        <p class="help">Formatos: JPG, PNG, WEBP</p>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-right mt-4">
+                        <div class="control">
+                            <a href="/jugadores-pagina" class="button is-light">Cancelar</a>
+                        </div>
+                        <div class="control">
+                            <button type="submit" class="button btn-billar">
+                                <span class="icon"><i class="fas fa-check"></i></span>
+                                <span>Registrar</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-
-        <div class="field">
-            <label class="label">Edad</label>
-            <div class="control">
-                <input class="input" type="number" name="edad" placeholder="Ej: 25" required>
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label">País</label>
-            <div class="control">
-                <input class="input" type="text" name="pais" placeholder="Ej: Colombia" required>
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label">Nivel</label>
-            <div class="control">
-                <div class="select is-fullwidth">
-                    <select name="nivel">
-                        <option value="principiante">Principiante</option>
-                        <option value="intermedio">Intermedio</option>
-                        <option value="profesional">Profesional</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-
-        <div class="field">
-            <label class="label">Foto de Perfil</label>
-            <div class="file is-boxed is-fullwidth has-name">
-                <label class="file-label">
-                    <input class="file-input" type="file" name="foto" accept="image/*" required>
-                    <span class="file-cta">
-                        <span class="file-label">Seleccionar archivo...</span>
-                    </span>
-                </label>
-            </div>
-        </div>
-
-        <div class="field is-grouped mt-5">
-            <div class="control">
-                <button type="submit" class="button is-success is-medium">Guardar Jugador</button>
-            </div>
-            <div class="control">
-                <a href="/jugadores-pagina" class="button is-light is-medium">Cancelar</a>
-            </div>
-        </div>
-    </form>
+    </div>
 </div>
 {% endblock %}

@@ -38,15 +38,6 @@ async def pagina_jugadores(request: Request, session: Session = Depends(get_sess
     jugadores = obtener_jugadores(session, solo_activos=False)
     return templates.TemplateResponse(request, "jugadores.html", {"jugadores": jugadores})
 
-@app.get("/partidas-pagina", response_class=HTMLResponse)
-async def pagina_partidas(request: Request, session: Session = Depends(get_session)):
-    partidas  = obtener_partidas(session)
-    jugadores = obtener_jugadores(session, solo_activos=False)
-    return templates.TemplateResponse(request, "partidas.html", {
-        "partidas": partidas, "jugadores": jugadores
-    })
-
-
 
 @app.post("/jugadores", response_model=JugadorID)
 def api_crear_jugador(jugador: JugadorBase, session: SessionDep):
@@ -99,19 +90,19 @@ async def api_crear_partida(
         jugador1_id: int = Form(...),
         jugador2_id: int = Form(...),
         ganador_id: int = Form(...),
-        fecha: str = Form(...),  # Recibe la fecha del HTML
+        fecha: str = Form(...),
         session: Session = Depends(get_session)
 ):
     try:
-        # 1. Convertir string a objeto date
+
         fecha_obj = datetime.strptime(fecha, "%Y-%m-%d").date()
 
-        # 2. Validación
+
         if ganador_id not in [jugador1_id, jugador2_id]:
             return templates.TemplateResponse("error.html", {"request": request,
                                                              "mensaje": "El ganador debe ser uno de los dos jugadores."})
 
-        # 3. Crear el modelo usando la fecha convertida
+
         partida = PartidaBase(
             jugador1_id=jugador1_id,
             jugador2_id=jugador2_id,
@@ -192,5 +183,77 @@ async def global_exception_handler(request: Request, exc: Exception):
         "request": request,
         "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
     })
+@app.get("/buscar", response_class=HTMLResponse)
+async def buscar_html(
+    request: Request,
+    q: str = "",
+    tipo: str = "nombre",
+    session: Session = Depends(get_session)
+):
+    resultados = []
+    if q:
+        if tipo == "pais":
+            resultados = buscar_por_pais(q, session)
+        else:
+            resultados = buscar_por_nombre(q, session)
+    return templates.TemplateResponse(request, "buscar.html", {
+        "resultados": resultados, "query": q, "tipo": tipo
+    })
 
+
+
+@app.post("/ranking/calcular-html", response_class=HTMLResponse)
+async def calcular_ranking_html(request: Request, session: Session = Depends(get_session)):
+    calcular_ranking(session)
+    ranking = obtener_ranking(session)
+    return templates.TemplateResponse(request, "ranking.html", {
+        "ranking": ranking, "active": "ranking",
+        "mensaje": "Ranking recalculado correctamente"
+    })
+
+
+
+@app.get("/partidas-pagina", response_class=HTMLResponse)
+async def pagina_partidas_v2(request: Request, session: Session = Depends(get_session)):
+    partidas  = obtener_partidas(session)
+    jugadores = obtener_jugadores(session, solo_activos=False)
+    nombres   = {j.id: j.nombre for j in jugadores}
+    return templates.TemplateResponse(request, "partidas.html", {
+        "partidas": partidas, "jugadores": jugadores,
+        "nombres": nombres, "active": "partidas"
+    })
+
+
+'''
+@app.get("/dashboard", response_class=HTMLResponse)
+async def dashboard(request: Request, session: Session = Depends(get_session)):
+    from collections import Counter
+    jugadores = obtener_jugadores(session, solo_activos=True)
+    partidas  = obtener_partidas(session)
+    ranking   = obtener_ranking(session)
+    nombres   = {j.id: j.nombre for j in jugadores}
+
+    ranking_nombres = [r.nombre for r in ranking]
+    ranking_puntos  = [r.puntos for r in ranking]
+
+    nivel_counter = Counter(j.nivel for j in jugadores)
+    pais_counter  = Counter(j.pais  for j in jugadores)
+    victoria_counter = Counter(p.ganador_id for p in partidas)
+
+    return templates.TemplateResponse(request, "dashboard.html", {
+        "request": request, "active": "dashboard",
+        "total_jugadores": len(jugadores),
+        "total_partidas":  len(partidas),
+        "lider":           ranking[0].nombre if ranking else "—",
+        "total_paises":    len(pais_counter),
+        "ranking_nombres": ranking_nombres,
+        "ranking_puntos":  ranking_puntos,
+        "nivel_labels":    list(nivel_counter.keys()),
+        "nivel_counts":    list(nivel_counter.values()),
+        "victoria_names":  [nombres.get(k, str(k)) for k in victoria_counter],
+        "victoria_counts": list(victoria_counter.values()),
+        "pais_labels":     list(pais_counter.keys()),
+        "pais_counts":     list(pais_counter.values()),
+    })
+'''
 

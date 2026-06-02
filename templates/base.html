@@ -2,37 +2,103 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <title>Billar Pro | Sistema de Ranking</title>
+    <title>{% block title %}Billar Pro | Sistema de Ranking{% endblock %}</title>
+    <style>
+        body { background-color: #f5f5f5; }
+        .navbar { background-color: #1a5c38 !important; }
+        .navbar-item, .navbar-link { color: #fff !important; }
+        .navbar-item:hover { background-color: #145230 !important; }
+        .navbar-item.is-active { color: #ffd700 !important; font-weight: bold; }
+        .hero-billar { background: linear-gradient(135deg, #1a5c38, #2d8a5e); color: white; }
+        .card { border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); }
+        .table thead th { background-color: #1a5c38; color: white; }
+        .tag.principiante { background-color: #48c78e; color: white; }
+        .tag.intermedio { background-color: #3273dc; color: white; }
+        .tag.profesional { background-color: #f14668; color: white; }
+        .jugador-foto { width: 48px; height: 48px; border-radius: 50%; object-fit: cover; border: 2px solid #1a5c38; }
+        .btn-billar { background-color: #1a5c38; color: white; border: none; }
+        .btn-billar:hover { background-color: #145230; color: white; }
+        footer { background-color: #1a5c38; color: #ccc; padding: 1.5rem; margin-top: 3rem; text-align: center; }
+        footer a { color: #a8d5b5; }
+    </style>
 </head>
 <body>
-    <nav class="navbar is-dark">
+
+<nav class="navbar" role="navigation">
+    <div class="container">
         <div class="navbar-brand">
-            <a class="navbar-item" href="/"><strong><i class="fas fa-pool-8-ball"></i> BILLAR PRO</strong></a>
+            <a class="navbar-item" href="/">
+                <strong>🎱 BILLAR PRO</strong>
+            </a>
+            <a role="button" class="navbar-burger" id="navBurger">
+                <span></span><span></span><span></span>
+            </a>
         </div>
-        <div class="navbar-menu">
+        <div class="navbar-menu" id="navMenu">
             <div class="navbar-start">
-                <a class="navbar-item" href="/ranking">Ranking</a>
-                <a class="navbar-item" href="/jugadores-pagina">Jugadores</a>
-                <a class="navbar-item" href="/partidas-pagina">Partidas</a>
+                <a class="navbar-item {% if active == 'ranking' %}is-active{% endif %}" href="/">
+                    <span class="icon"><i class="fas fa-trophy"></i></span>&nbsp;Ranking
+                </a>
+                <a class="navbar-item {% if active == 'jugadores' %}is-active{% endif %}" href="/jugadores-pagina">
+                    <span class="icon"><i class="fas fa-users"></i></span>&nbsp;Jugadores
+                </a>
+                <a class="navbar-item {% if active == 'partidas' %}is-active{% endif %}" href="/partidas-pagina">
+                    <span class="icon"><i class="fas fa-gamepad"></i></span>&nbsp;Partidas
+                </a>
+                <a class="navbar-item {% if active == 'dashboard' %}is-active{% endif %}" href="/dashboard">
+                    <span class="icon"><i class="fas fa-chart-bar"></i></span>&nbsp;Dashboard
+                </a>
+                <a class="navbar-item" href="/jugadores/nuevo">
+                    <span class="icon"><i class="fas fa-user-plus"></i></span>&nbsp;Nuevo Jugador
+                </a>
             </div>
             <div class="navbar-end">
                 <div class="navbar-item">
-                    <form action="/jugadores/buscar/nombre" method="get">
-                        <div class="field has-addons">
-                            <input class="input" type="text" name="nombre" placeholder="Buscar jugador...">
-                            <button class="button is-info">Buscar</button>
+                    <form action="/buscar" method="get">
+                        <div class="field has-addons mb-0">
+                            <div class="control">
+                                <input class="input" type="text" name="q"
+                                       placeholder="Buscar jugador..."
+                                       value="{{ query if query else '' }}">
+                            </div>
+                            <div class="control">
+                                <button class="button is-warning" type="submit">
+                                    <i class="fas fa-search"></i>
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
-    </nav>
-    <section class="section">
-        <div class="container">
-            {% block content %}{% endblock %}
-        </div>
-    </section>
+    </div>
+</nav>
+
+<section class="section">
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+</section>
+
+<footer>
+    <p>🎱 <strong style="color:white">Billar Pro</strong> — Proyecto Integrador Desarrollo de Software</p>
+    <p><small>
+        <a href="https://fastapi.tiangolo.com">FastAPI</a> ·
+        <a href="https://neon.tech">Neon</a> ·
+        <a href="https://supabase.com">Supabase</a> ·
+        <a href="https://bulma.io">Bulma CSS</a>
+    </small></p>
+</footer>
+
+<script>
+document.getElementById('navBurger').addEventListener('click', function() {
+    this.classList.toggle('is-active');
+    document.getElementById('navMenu').classList.toggle('is-active');
+});
+</script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

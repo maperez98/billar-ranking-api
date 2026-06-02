@@ -1,23 +1,63 @@
 {% extends "base.html" %}
-{% block content %}
-<h1 class="title">Nuestros Jugadores</h1>
-<a href="/jugadores/nuevo" class="button is-primary mb-5"><i class="fas fa-plus"></i> &nbsp; Nuevo Jugador</a>
+{% block title %}Jugadores — Billar Pro{% endblock %}
 
-<div class="columns is-multiline">
-    {% for j in jugadores %}
-    <div class="column is-one-quarter">
-        <div class="card">
-            <div class="card-image">
-                <figure class="image is-4by3">
-                    <img src="{{ j.foto_url }}" alt="Foto de {{ j.nombre }}">
-                </figure>
-            </div>
-            <div class="card-content">
-                <p class="title is-4">{{ j.nombre }}</p>
-                <p class="subtitle is-6">{{ j.pais }} | Nivel: {{ j.nivel }}</p>
-            </div>
+{% block content %}
+<div class="level mb-4">
+    <div class="level-left">
+        <h2 class="title is-3">👤 Jugadores</h2>
+    </div>
+    <div class="level-right">
+        <a href="/jugadores/nuevo" class="button btn-billar">
+            <span class="icon"><i class="fas fa-user-plus"></i></span>
+            <span>Nuevo Jugador</span>
+        </a>
+    </div>
+</div>
+
+{% if jugadores %}
+<div class="card">
+    <div class="card-content p-0">
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                    <tr>
+                        <th>Foto</th><th>ID</th><th>Nombre</th>
+                        <th>Edad</th><th>País</th><th>Nivel</th><th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for j in jugadores %}
+                    <tr>
+                        <td>
+                            {% if j.foto_url %}
+                            <img src="{{ j.foto_url }}" class="jugador-foto" alt="{{ j.nombre }}">
+                            {% else %}
+                            <span class="icon has-text-grey"><i class="fas fa-user-circle fa-2x"></i></span>
+                            {% endif %}
+                        </td>
+                        <td><span class="tag is-light">{{ j.id }}</span></td>
+                        <td><strong>{{ j.nombre }}</strong></td>
+                        <td>{{ j.edad }}</td>
+                        <td>{{ j.pais }}</td>
+                        <td><span class="tag {{ j.nivel }}">{{ j.nivel }}</span></td>
+                        <td>
+                            {% if j.activo %}
+                            <span class="tag is-success">Activo</span>
+                            {% else %}
+                            <span class="tag is-danger">Inactivo</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-    {% endfor %}
 </div>
+{% else %}
+<div class="has-text-centered py-6">
+    <p class="title is-4 has-text-grey">No hay jugadores registrados</p>
+    <a href="/jugadores/nuevo" class="button btn-billar mt-3">Agregar primer jugador</a>
+</div>
+{% endif %}
 {% endblock %}

@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Búsqueda — Billar Pro{% endblock %}
+
+{% block content %}
+<h2 class="title is-3 mb-4">
+    <span class="icon"><i class="fas fa-search"></i></span> Resultados: "{{ query }}"
+</h2>
+
+<div class="card mb-5">
+    <div class="card-content">
+        <form action="/buscar" method="get">
+            <div class="field has-addons">
+                <div class="control is-expanded">
+                    <input class="input is-medium" type="text" name="q"
+                           value="{{ query }}" placeholder="Buscar por nombre o país...">
+                </div>
+                <div class="control">
+                    <div class="select is-medium">
+                        <select name="tipo">
+                            <option value="nombre" {% if tipo =='nombre' %}selected{% endif %}>Por nombre</option>
+                            <option value="pais" {% if tipo =='pais' %}selected{% endif %}>Por país</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="control">
+                    <button class="button btn-billar is-medium" type="submit">
+                        <span class="icon"><i class="fas fa-search"></i></span>
+                        <span>Buscar</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if resultados %}
+<p class="subtitle">{{ resultados|length }} resultado(s) encontrado(s)</p>
+<div class="card">
+    <div class="card-content p-0">
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                    <tr>
+                        <th>Foto</th><th>ID</th><th>Nombre</th>
+                        <th>País</th><th>Nivel</th><th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for j in resultados %}
+                    <tr>
+                        <td>
+                            {% if j.foto_url %}
+                            <img src="{{ j.foto_url }}" class="jugador-foto" alt="{{ j.nombre }}">
+                            {% else %}
+                            <span class="icon has-text-grey"><i class="fas fa-user-circle fa-2x"></i></span>
+                            {% endif %}
+                        </td>
+                        <td><span class="tag is-light">{{ j.id }}</span></td>
+                        <td><strong>{{ j.nombre }}</strong></td>
+                        <td>{{ j.pais }}</td>
+                        <td><span class="tag {{ j.nivel }}">{{ j.nivel }}</span></td>
+                        <td>
+                            <span class="tag {% if j.activo %}is-success{% else %}is-danger{% endif %}">
+                                {{ "Activo" if j.activo else "Inactivo" }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="has-text-centered py-6">
+    <p class="title is-4 has-text-grey">Sin resultados para "{{ query }}"</p>
+    <a href="/jugadores-pagina" class="button btn-billar mt-3">Ver todos los jugadores</a>
+</div>
+{% endif %}
+{% endblock %}

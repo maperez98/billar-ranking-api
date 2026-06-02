@@ -1,22 +1,73 @@
 {% extends "base.html" %}
+{% block title %}Ranking — Billar Pro{% endblock %}
+
 {% block content %}
-<section class="hero is-primary is-medium mb-5">
-    <div class="hero-body">
-        <h1 class="title">Bienvenido al Ranking Oficial</h1>
-        <p class="subtitle">Gestiona tus jugadores y partidas como un profesional.</p>
+<section class="hero hero-billar is-medium mb-5" style="border-radius:10px">
+    <div class="hero-body has-text-centered">
+        <h1 class="title is-1" style="color:white">🏆 Ranking de Billar</h1>
+        <p class="subtitle" style="color:#d4f1e4">Clasificación oficial de jugadores</p>
+        <form method="post" action="/ranking/calcular-html">
+            <button type="submit" class="button is-warning is-medium">
+                <span class="icon"><i class="fas fa-calculator"></i></span>
+                <span>Recalcular Ranking</span>
+            </button>
+        </form>
     </div>
 </section>
-<h2 class="title">Top Jugadores</h2>
-<table class="table is-fullwidth is-striped">
-    <thead><tr><th>Pos</th><th>Nombre</th><th>Puntos</th></tr></thead>
-    <tbody>
-        {% for r in ranking %}
-        <tr>
-            <td>{{ loop.index }}</td>
-            <td>{{ r.nombre }}</td>
-            <td>{{ r.puntos }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+
+{% if mensaje %}
+<div class="notification is-success">✅ {{ mensaje }}</div>
+{% endif %}
+
+{% if ranking %}
+<!-- Top 3 -->
+<div class="columns is-centered mb-5">
+    {% for r in ranking[:3] %}
+    <div class="column is-4">
+        <div class="card has-text-centered py-4">
+            <div class="card-content">
+                <p class="title is-1">
+                    {% if r.posicion == 1 %}🥇{% elif r.posicion == 2 %}🥈{% else %}🥉{% endif %}
+                </p>
+                <p class="title is-4">{{ r.nombre }}</p>
+                <span class="tag is-success is-medium">{{ r.puntos }} pts</span>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Tabla completa -->
+<div class="card">
+    <div class="card-content">
+        <p class="title is-5"><span class="icon"><i class="fas fa-list-ol"></i></span> Clasificación Completa</p>
+        <div class="table-container">
+            <table class="table is-fullwidth is-striped is-hoverable">
+                <thead>
+                    <tr><th>Posición</th><th>Nombre</th><th>Puntos</th></tr>
+                </thead>
+                <tbody>
+                    {% for r in ranking %}
+                    <tr>
+                        <td><strong>
+                            {% if r.posicion == 1 %}🥇
+                            {% elif r.posicion == 2 %}🥈
+                            {% elif r.posicion == 3 %}🥉
+                            {% else %}#{{ r.posicion }}{% endif %}
+                        </strong></td>
+                        <td>{{ r.nombre }}</td>
+                        <td><span class="tag is-success">{{ r.puntos }} pts</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="has-text-centered py-6">
+    <p class="title is-4 has-text-grey">No hay ranking todavía</p>
+    <p class="subtitle has-text-grey">Agrega jugadores y partidas, luego presiona Recalcular</p>
+</div>
+{% endif %}
 {% endblock %}

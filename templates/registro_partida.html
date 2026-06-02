@@ -1,33 +1,79 @@
 {% extends "base.html" %}
+{% block title %}Nueva Partida — Billar Pro{% endblock %}
+
 {% block content %}
-<div class="box" style="max-width: 500px; margin: 0 auto;">
-    <h1 class="title">Registrar Partida</h1>
-    <form action="/partidas" method="post">
-        <div class="field">
-            <label class="label">Jugador 1</label>
-            <div class="select is-fullwidth"><select name="jugador1_id">
-                {% for j in jugadores %}<option value="{{ j.id }}">{{ j.nombre }}</option>{% endfor %}
-            </select></div>
-        </div>
-        <div class="field">
-            <label class="label">Jugador 2</label>
-            <div class="select is-fullwidth"><select name="jugador2_id">
-                {% for j in jugadores %}<option value="{{ j.id }}">{{ j.nombre }}</option>{% endfor %}
-            </select></div>
-        </div>
-        <div class="field">
-            <label class="label">Ganador</label>
-            <div class="select is-fullwidth"><select name="ganador_id">
-                {% for j in jugadores %}<option value="{{ j.id }}">{{ j.nombre }}</option>{% endfor %}
-            </select></div>
-        </div>
-        <div class="field">
-            <label class="label">Fecha de la partida</label>
-            <div class="control">
-                <input class="input" type="date" name="fecha" required>
+<div class="columns is-centered">
+    <div class="column is-6">
+        <div class="card">
+            <div class="card-content">
+                <p class="title is-4">
+                    <span class="icon"><i class="fas fa-gamepad"></i></span> Registrar Partida
+                </p>
+
+                <form method="post" action="/partidas">
+                    <div class="field">
+                        <label class="label">Jugador 1 *</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select name="jugador1_id" required>
+                                    <option value="" disabled selected>Selecciona jugador 1</option>
+                                    {% for j in jugadores %}
+                                    <option value="{{ j.id }}">{{ j.nombre }} — {{ j.pais }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Jugador 2 *</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select name="jugador2_id" required>
+                                    <option value="" disabled selected>Selecciona jugador 2</option>
+                                    {% for j in jugadores %}
+                                    <option value="{{ j.id }}">{{ j.nombre }} — {{ j.pais }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Ganador *</label>
+                        <div class="control">
+                            <div class="select is-fullwidth">
+                                <select name="ganador_id" required>
+                                    <option value="" disabled selected>¿Quién ganó?</option>
+                                    {% for j in jugadores %}
+                                    <option value="{{ j.id }}">{{ j.nombre }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label class="label">Fecha *</label>
+                        <div class="control">
+                            <input class="input" type="date" name="fecha" required>
+                        </div>
+                    </div>
+
+                    <div class="field is-grouped is-grouped-right mt-4">
+                        <div class="control">
+                            <a href="/partidas-pagina" class="button is-light">Cancelar</a>
+                        </div>
+                        <div class="control">
+                            <button type="submit" class="button btn-billar">
+                                <span class="icon"><i class="fas fa-check"></i></span>
+                                <span>Registrar Partida</span>
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <button type="submit" class="button is-success is-fullwidth mt-4">Guardar Partida</button>
-    </form>
+    </div>
 </div>
 {% endblock %}
