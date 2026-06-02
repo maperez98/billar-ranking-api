@@ -183,6 +183,8 @@ async def global_exception_handler(request: Request, exc: Exception):
         "request": request,
         "mensaje": "Ha ocurrido un error inesperado. Por favor, intenta de nuevo."
     })
+
+'''
 @app.get("/buscar", response_class=HTMLResponse)
 async def buscar_html(
     request: Request,
@@ -200,7 +202,7 @@ async def buscar_html(
         "resultados": resultados, "query": q, "tipo": tipo
     })
 
-
+'''
 
 @app.post("/ranking/calcular-html", response_class=HTMLResponse)
 async def calcular_ranking_html(request: Request, session: Session = Depends(get_session)):
@@ -256,4 +258,3 @@ async def dashboard(request: Request, session: Session = Depends(get_session)):
         "pais_counts":     list(pais_counter.values()),
     })
 '''
-
