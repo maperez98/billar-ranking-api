@@ -1,20 +1,64 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="box">
-    <h1 class="title">Registrar Jugador</h1>
+<div class="box" style="max-width: 600px; margin: 0 auto;">
+    <h1 class="title has-text-centered">Registrar Jugador</h1>
+
     <form action="/jugadores/con-foto" method="post" enctype="multipart/form-data">
-        <div class="field"><label>Nombre</label><input class="input" type="text" name="nombre" required></div>
-        <div class="field"><label>Edad</label><input class="input" type="number" name="edad" required></div>
-        <div class="field"><label>País</label><input class="input" type="text" name="pais" required></div>
+
         <div class="field">
-            <label>Nivel</label>
-            <div class="select is-fullwidth"><select name="nivel">
-                <option value="principiante">Principiante</option>
-                <option value="profesional">Profesional</option>
-            </select></div>
+            <label class="label">Nombre del Jugador</label>
+            <div class="control">
+                <input class="input" type="text" name="nombre" placeholder="Ej: Juan Pérez" required>
+            </div>
         </div>
-        <div class="field"><label>Foto</label><input class="file-input" type="file" name="foto" required></div>
-        <button class="button is-success">Guardar</button>
+
+        <div class="field">
+            <label class="label">Edad</label>
+            <div class="control">
+                <input class="input" type="number" name="edad" placeholder="Ej: 25" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">País</label>
+            <div class="control">
+                <input class="input" type="text" name="pais" placeholder="Ej: Colombia" required>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">Nivel</label>
+            <div class="control">
+                <div class="select is-fullwidth">
+                    <select name="nivel">
+                        <option value="principiante">Principiante</option>
+                        <option value="intermedio">Intermedio</option>
+                        <option value="profesional">Profesional</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label class="label">Foto de Perfil</label>
+            <div class="file is-boxed is-fullwidth has-name">
+                <label class="file-label">
+                    <input class="file-input" type="file" name="foto" accept="image/*" required>
+                    <span class="file-cta">
+                        <span class="file-label">Seleccionar archivo...</span>
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="field is-grouped mt-5">
+            <div class="control">
+                <button type="submit" class="button is-success is-medium">Guardar Jugador</button>
+            </div>
+            <div class="control">
+                <a href="/jugadores-pagina" class="button is-light is-medium">Cancelar</a>
+            </div>
+        </div>
     </form>
 </div>
 {% endblock %}
