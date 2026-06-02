@@ -109,7 +109,10 @@ def api_actualizar_partida(id: int, datos: PartidaUpdate, session: SessionDep):
 def api_eliminar_partida(id: int, session: SessionDep):
     return eliminar_partida(id, session)
 
-
+@app.get("/partidas/nuevo", response_class=HTMLResponse)
+async def pagina_nueva_partida(request: Request, session: Session = Depends(get_session)):
+    jugadores = obtener_jugadores(session)
+    return templates.TemplateResponse(request, "registro_partida.html", {"jugadores": jugadores})
 
 @app.get("/ranking", response_model=list[RankingID])
 def api_ranking(session: SessionDep):
