@@ -1,10 +1,10 @@
 {% extends "base.html" %}
-{% block title %}Jugadores — Billar Pro{% endblock %}
+{% block title %}Jugadores - Billar Pro{% endblock %}
 
 {% block content %}
 <div class="level mb-4">
     <div class="level-left">
-        <h2 class="title is-3">Jugadores</h2>
+        <h2 class="title is-3"> Jugadores</h2>
     </div>
     <div class="level-right">
         <a href="/jugadores/nuevo" class="button btn-billar">
@@ -14,6 +14,13 @@
     </div>
 </div>
 
+{% if mensaje %}
+<div class="notification is-success mb-4">✅ {{ mensaje }}</div>
+{% endif %}
+{% if error %}
+<div class="notification is-danger mb-4">❌ {{ error }}</div>
+{% endif %}
+
 {% if jugadores %}
 <div class="card">
     <div class="card-content p-0">
@@ -22,7 +29,8 @@
                 <thead>
                     <tr>
                         <th>Foto</th><th>ID</th><th>Nombre</th>
-                        <th>Edad</th><th>País</th><th>Nivel</th><th>Estado</th>
+                        <th>Edad</th><th>Pais</th><th>Nivel</th>
+                        <th>Estado</th><th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -47,6 +55,22 @@
                             <span class="tag is-danger">Inactivo</span>
                             {% endif %}
                         </td>
+                        <td>
+                            <!-- Botón Editar -->
+                            <button class="button is-small is-info mr-1"
+                                onclick="abrirEditar({{ j.id }}, '{{ j.nombre }}', {{ j.edad }}, '{{ j.pais }}', '{{ j.nivel }}')">
+                                <span class="icon"><i class="fas fa-edit"></i></span>
+                            </button>
+                            <!-- Botón Eliminar -->
+                            {% if j.activo %}
+                            <button class="button is-small is-danger"
+                                onclick="confirmarEliminar({{ j.id }}, '{{ j.nombre }}')">
+                                <span class="icon"><i class="fas fa-user-slash"></i></span>
+                            </button>
+                            {% else %}
+                            <span class="tag is-light">Inactivo</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -60,4 +84,201 @@
     <a href="/jugadores/nuevo" class="button btn-billar mt-3">Agregar primer jugador</a>
 </div>
 {% endif %}
+
+
+<div class="modal" id="modalEditar">
+    <div class="modal-background" onclick="cerrarModal()"></div>
+    <div class="modal-card">
+        <header class="modal-card-head" style="background:#1a5c38">
+            <p class="modal-card-title" style="color:white">
+                <i class="fas fa-edit"></i> Editar Jugador
+            </p>
+            <button class="delete" onclick="cerrarModal()"></button>
+        </header>
+        <section class="modal-card-body">
+            <form id="formEditar">
+                <input type="hidden" id="editId">
+
+                <div class="field">
+                    <label class="label">Nombre *</label>
+                    <div class="control">
+                        <input class="input" type="text" id="editNombre"
+                               required minlength="2" maxlength="50">
+                    </div>
+                    <p class="help is-danger" id="editErrorNombre"></p>
+                </div>
+
+                <div class="columns">
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Edad *</label>
+                            <div class="control">
+                                <input class="input" type="number" id="editEdad"
+                                       min="18" max="100" required>
+                            </div>
+                            <p class="help is-danger" id="editErrorEdad"></p>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="field">
+                            <label class="label">Pais *</label>
+                            <div class="control">
+                                <div class="select is-fullwidth">
+                                    <select id="editPais" required>
+                                        <option value="Argentina">Argentina</option>
+                                        <option value="Bolivia">Bolivia</option>
+                                        <option value="Brasil">Brasil</option>
+                                        <option value="Chile">Chile</option>
+                                        <option value="Colombia">Colombia</option>
+                                        <option value="Costa Rica">Costa Rica</option>
+                                        <option value="Cuba">Cuba</option>
+                                        <option value="Ecuador">Ecuador</option>
+                                        <option value="El Salvador">El Salvador</option>
+                                        <option value="Guatemala">Guatemala</option>
+                                        <option value="Honduras">Honduras</option>
+                                        <option value="Mexico">Mexico</option>
+                                        <option value="Nicaragua">Nicaragua</option>
+                                        <option value="Panama">Panama</option>
+                                        <option value="Paraguay">Paraguay</option>
+                                        <option value="Peru">Peru</option>
+                                        <option value="Puerto Rico">Puerto Rico</option>
+                                        <option value="Republica Dominicana">Republica Dominicana</option>
+                                        <option value="Uruguay">Uruguay</option>
+                                        <option value="Venezuela">Venezuela</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label class="label">Nivel *</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select id="editNivel" required>
+                                <option value="principiante">Verde - Principiante</option>
+                                <option value="intermedio">Azul - Intermedio</option>
+                                <option value="profesional">Rojo - Profesional</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button btn-billar" onclick="guardarEdicion()">
+                <span class="icon"><i class="fas fa-check"></i></span>
+                <span>Guardar Cambios</span>
+            </button>
+            <button class="button" onclick="cerrarModal()">Cancelar</button>
+        </footer>
+    </div>
+</div>
+
+
+<div class="modal" id="modalEliminar">
+    <div class="modal-background" onclick="cerrarModalEliminar()"></div>
+    <div class="modal-card">
+        <header class="modal-card-head" style="background:#f14668">
+            <p class="modal-card-title" style="color:white">
+                <i class="fas fa-exclamation-triangle"></i> Confirmar
+            </p>
+            <button class="delete" onclick="cerrarModalEliminar()"></button>
+        </header>
+        <section class="modal-card-body">
+            <p>¿Seguro que quieres desactivar a <strong id="nombreEliminar"></strong>?</p>
+            <p class="help has-text-grey mt-2">El jugador quedara inactivo y no podra participar en nuevas partidas.</p>
+        </section>
+        <footer class="modal-card-foot">
+            <button class="button is-danger" onclick="ejecutarEliminar()">
+                <span class="icon"><i class="fas fa-user-slash"></i></span>
+                <span>Desactivar</span>
+            </button>
+            <button class="button" onclick="cerrarModalEliminar()">Cancelar</button>
+        </footer>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    let idEliminar = null;
+
+    function abrirEditar(id, nombre, edad, pais, nivel) {
+        document.getElementById('editId').value = id;
+        document.getElementById('editNombre').value = nombre;
+        document.getElementById('editEdad').value = edad;
+        document.getElementById('editPais').value = pais;
+        document.getElementById('editNivel').value = nivel;
+        document.getElementById('modalEditar').classList.add('is-active');
+    }
+
+    function cerrarModal() {
+        document.getElementById('modalEditar').classList.remove('is-active');
+    }
+
+    function confirmarEliminar(id, nombre) {
+        idEliminar = id;
+        document.getElementById('nombreEliminar').textContent = nombre;
+        document.getElementById('modalEliminar').classList.add('is-active');
+    }
+
+    function cerrarModalEliminar() {
+        document.getElementById('modalEliminar').classList.remove('is-active');
+        idEliminar = null;
+    }
+
+    async function guardarEdicion() {
+        const id     = document.getElementById('editId').value;
+        const nombre = document.getElementById('editNombre').value.trim();
+        const edad   = parseInt(document.getElementById('editEdad').value);
+        const pais   = document.getElementById('editPais').value;
+        const nivel  = document.getElementById('editNivel').value;
+
+
+        if (nombre.length < 2 || /\d/.test(nombre)) {
+            document.getElementById('editErrorNombre').textContent = 'Nombre invalido';
+            return;
+        }
+        if (isNaN(edad) || edad < 18 || edad > 100) {
+            document.getElementById('editErrorEdad').textContent = 'Edad debe estar entre 18 y 100';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/jugadores/${id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ nombre, edad, pais, nivel })
+            });
+
+            if (res.ok) {
+                cerrarModal();
+                location.reload();
+            } else {
+                alert('Error al actualizar el jugador');
+            }
+        } catch (e) {
+            alert('Error de conexion');
+        }
+    }
+
+    async function ejecutarEliminar() {
+        try {
+            const res = await fetch(`/jugadores/${idEliminar}`, {
+                method: 'DELETE'
+            });
+
+            if (res.ok) {
+                cerrarModalEliminar();
+                location.reload();
+            } else {
+                alert('Error al desactivar el jugador');
+            }
+        } catch (e) {
+            alert('Error de conexion');
+        }
+    }
+</script>
 {% endblock %}
