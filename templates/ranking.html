@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% block title %}Ranking — Billar Pro{% endblock %}
+{% block title %}Ranking - Billar Pro{% endblock %}
 
 {% block content %}
 <section class="hero hero-billar is-medium mb-5" style="border-radius:10px">
     <div class="hero-body has-text-centered">
         <h1 class="title is-1" style="color:white">🏆 Ranking de Billar</h1>
-        <p class="subtitle" style="color:#d4f1e4">Clasificación oficial de jugadores</p>
+        <p class="subtitle" style="color:#d4f1e4">Clasificacion oficial de jugadores</p>
         <form method="post" action="/ranking/calcular-html">
             <button type="submit" class="button is-warning is-medium">
                 <span class="icon"><i class="fas fa-calculator"></i></span>
@@ -20,7 +20,7 @@
 {% endif %}
 
 {% if ranking %}
-<!-- Top 3 -->
+
 <div class="columns is-centered mb-5">
     {% for r in ranking[:3] %}
     <div class="column is-4">
@@ -31,20 +31,35 @@
                 </p>
                 <p class="title is-4">{{ r.nombre }}</p>
                 <span class="tag is-success is-medium">{{ r.puntos }} pts</span>
+                <br><br>
+                <span class="tag is-info">{{ r.partidas_jugadas }} partidas</span>
+                {% if r.partidas_jugadas > 0 %}
+                <span class="tag is-warning">
+                    {{ ((r.puntos / 10 / r.partidas_jugadas) * 100) | round(0) | int }}% victorias
+                </span>
+                {% endif %}
             </div>
         </div>
     </div>
     {% endfor %}
 </div>
 
-<!-- Tabla completa -->
+
 <div class="card">
     <div class="card-content">
-        <p class="title is-5"><span class="icon"><i class="fas fa-list-ol"></i></span> Clasificación Completa</p>
+        <p class="title is-5">
+            <span class="icon"><i class="fas fa-list-ol"></i></span> Clasificacion Completa
+        </p>
         <div class="table-container">
             <table class="table is-fullwidth is-striped is-hoverable">
                 <thead>
-                    <tr><th>Posición</th><th>Nombre</th><th>Puntos</th></tr>
+                    <tr>
+                        <th>Posicion</th>
+                        <th>Nombre</th>
+                        <th>Puntos</th>
+                        <th>Partidas</th>
+                        <th>% Victorias</th>
+                    </tr>
                 </thead>
                 <tbody>
                     {% for r in ranking %}
@@ -57,16 +72,31 @@
                         </strong></td>
                         <td>{{ r.nombre }}</td>
                         <td><span class="tag is-success">{{ r.puntos }} pts</span></td>
+                        <td><span class="tag is-info">{{ r.partidas_jugadas }}</span></td>
+                        <td>
+                            {% if r.partidas_jugadas > 0 %}
+                            <span class="tag is-warning">
+                                {{ ((r.puntos / 10 / r.partidas_jugadas) * 100) | round(0) | int }}%
+                            </span>
+                            {% else %}
+                            <span class="tag is-light">Sin partidas</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+        <p class="help has-text-grey mt-2">
+            <span class="icon"><i class="fas fa-info-circle"></i></span>
+            En caso de empate en puntos, se ordena por mayor numero de partidas jugadas.
+        </p>
     </div>
 </div>
+
 {% else %}
 <div class="has-text-centered py-6">
-    <p class="title is-4 has-text-grey">No hay ranking todavía</p>
+    <p class="title is-4 has-text-grey">No hay ranking todavia</p>
     <p class="subtitle has-text-grey">Agrega jugadores y partidas, luego presiona Recalcular</p>
 </div>
 {% endif %}

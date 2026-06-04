@@ -65,16 +65,13 @@ def calcular_ranking(session: Session):
     ).all()
     puntos  = {j.id: 0 for j in jugadores}
     nombres = {j.id: j.nombre for j in jugadores}
-    jugadas = {j.id: 0 for j in jugadores}  # total partidas jugadas
+    jugadas = {j.id: 0 for j in jugadores}
 
     for partida in session.exec(select(PartidaID)).all():
-
         jugadas[partida.jugador1_id] = jugadas.get(partida.jugador1_id, 0) + 1
         jugadas[partida.jugador2_id] = jugadas.get(partida.jugador2_id, 0) + 1
-
         if partida.ganador_id in puntos:
             puntos[partida.ganador_id] += 10
-
 
     ranking_ordenado = sorted(
         puntos.items(),
@@ -87,7 +84,8 @@ def calcular_ranking(session: Session):
             jugador_id=jugador_id,
             nombre=nombres.get(jugador_id, "Desconocido"),
             puntos=puntaje,
-            posicion=posicion
+            posicion=posicion,
+            partidas_jugadas=jugadas.get(jugador_id, 0)  
         ))
     session.commit()
     return {"mensaje": "ranking calculado y guardado"}
