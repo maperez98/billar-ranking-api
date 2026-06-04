@@ -17,6 +17,9 @@
 
 </div>
 
+## 📄 Documentación
+
+[📥 Ver Informe Técnico](docs/informe_tecnico_billar-ranking.pdf)
 ---
 
 ## 🎯 Objetivo
