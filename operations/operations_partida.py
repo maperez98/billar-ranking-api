@@ -63,16 +63,26 @@ def calcular_ranking(session: Session):
     jugadores = session.exec(
         select(JugadorID).where(JugadorID.activo == True)
     ).all()
-    puntos  = {j.id: 0       for j in jugadores}
+    puntos  = {j.id: 0 for j in jugadores}
     nombres = {j.id: j.nombre for j in jugadores}
+    jugadas = {j.id: 0 for j in jugadores}  # total partidas jugadas
 
     for partida in session.exec(select(PartidaID)).all():
+
+        jugadas[partida.jugador1_id] = jugadas.get(partida.jugador1_id, 0) + 1
+        jugadas[partida.jugador2_id] = jugadas.get(partida.jugador2_id, 0) + 1
+
         if partida.ganador_id in puntos:
             puntos[partida.ganador_id] += 10
 
-    for posicion, (jugador_id, puntaje) in enumerate(
-        sorted(puntos.items(), key=lambda x: x[1], reverse=True), start=1
-    ):
+
+    ranking_ordenado = sorted(
+        puntos.items(),
+        key=lambda x: (x[1], jugadas.get(x[0], 0)),
+        reverse=True
+    )
+
+    for posicion, (jugador_id, puntaje) in enumerate(ranking_ordenado, start=1):
         session.add(RankingID(
             jugador_id=jugador_id,
             nombre=nombres.get(jugador_id, "Desconocido"),
