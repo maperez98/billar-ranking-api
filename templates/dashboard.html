@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Billar Pro{% endblock %}
+
+{% block content %}
+<h2 class="title is-3 mb-5">
+    <span class="icon"><i class="fas fa-chart-bar"></i></span> Dashboard de Estadisticas
+</h2>
+
+<div class="columns mb-5">
+    <div class="column">
+        <div class="card has-text-centered" style="background:#1a5c38;color:white;border-radius:10px">
+            <div class="card-content">
+                <i class="fas fa-users fa-2x"></i>
+                <p class="title is-2 mt-2" style="color:white">{{ total_jugadores }}</p>
+                <p>Jugadores Activos</p>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card has-text-centered" style="background:#3273dc;color:white;border-radius:10px">
+            <div class="card-content">
+                <i class="fas fa-gamepad fa-2x"></i>
+                <p class="title is-2 mt-2" style="color:white">{{ total_partidas }}</p>
+                <p>Partidas Jugadas</p>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card has-text-centered" style="background:#ffc107;border-radius:10px">
+            <div class="card-content">
+                <i class="fas fa-trophy fa-2x"></i>
+                <p class="title is-3 mt-2">{{ lider }}</p>
+                <p>Lider del Ranking</p>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card has-text-centered" style="background:#f14668;color:white;border-radius:10px">
+            <div class="card-content">
+                <i class="fas fa-globe fa-2x"></i>
+                <p class="title is-2 mt-2" style="color:white">{{ total_paises }}</p>
+                <p>Paises</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="columns">
+    <div class="column is-7">
+        <div class="card">
+            <div class="card-content">
+                <p class="title is-6"><i class="fas fa-chart-bar"></i> Puntos por Jugador</p>
+                <canvas id="chartRanking" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="column is-5">
+        <div class="card">
+            <div class="card-content">
+                <p class="title is-6"><i class="fas fa-chart-pie"></i> Jugadores por Nivel</p>
+                <canvas id="chartNivel" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="columns mt-4">
+    <div class="column">
+        <div class="card">
+            <div class="card-content">
+                <p class="title is-6"><i class="fas fa-trophy"></i> Victorias por Jugador</p>
+                <canvas id="chartVictorias" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="column">
+        <div class="card">
+            <div class="card-content">
+                <p class="title is-6"><i class="fas fa-globe"></i> Jugadores por Pais</p>
+                <canvas id="chartPaises" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const VERDE = '#1a5c38';
+    const COLORES = ['#1a5c38','#48c78e','#3273dc','#f14668','#ffc107','#9b59b6','#00d1b2','#ff7043'];
+
+    new Chart(document.getElementById('chartRanking'), {
+        type: 'bar',
+        data: {
+            labels: {{ ranking_nombres | tojson }},
+            datasets: [{ label: 'Puntos', data: {{ ranking_puntos | tojson }},
+                backgroundColor: VERDE, borderRadius: 6 }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('chartNivel'), {
+        type: 'doughnut',
+        data: {
+            labels: {{ nivel_labels | tojson }},
+            datasets: [{ data: {{ nivel_counts | tojson }}, backgroundColor: COLORES }]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('chartVictorias'), {
+        type: 'bar',
+        data: {
+            labels: {{ victoria_names | tojson }},
+            datasets: [{ label: 'Victorias', data: {{ victoria_counts | tojson }},
+                backgroundColor: '#3273dc', borderRadius: 6 }]
+        },
+        options: { indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true } } }
+    });
+
+    new Chart(document.getElementById('chartPaises'), {
+        type: 'bar',
+        data: {
+            labels: {{ pais_labels | tojson }},
+            datasets: [{ label: 'Jugadores', data: {{ pais_counts | tojson }},
+                backgroundColor: COLORES, borderRadius: 6 }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+</script>
+{% endblock %}
