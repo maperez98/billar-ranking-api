@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Nuevo Jugador — Billar Pro{% endblock %}
+{% block title %}Nuevo Jugador - Billar Pro{% endblock %}
 
 {% block content %}
 <div class="columns is-centered">
@@ -14,32 +14,37 @@
                 <div class="notification is-danger">{{ error }}</div>
                 {% endif %}
 
-                <form method="post" action="/jugadores/con-foto" enctype="multipart/form-data">
+                <form method="post" action="/jugadores/con-foto" enctype="multipart/form-data" id="formJugador">
+
                     <div class="field">
                         <label class="label">Nombre *</label>
-                        <div class="control">
-                            <input class="input" type="text" name="nombre"
-                                   placeholder="Ej: Carlos Rodríguez" required minlength="2" maxlength="50">
+                        <div class="control has-icons-left">
+                            <input class="input" type="text" name="nombre" id="nombre"
+                                   placeholder="Ej: Carlos Rodriguez" required minlength="2" maxlength="50">
+                            <span class="icon is-left"><i class="fas fa-user"></i></span>
                         </div>
+                        <p class="help is-danger" id="errorNombre"></p>
                     </div>
 
                     <div class="columns">
                         <div class="column">
                             <div class="field">
                                 <label class="label">Edad *</label>
-                                <div class="control">
-                                    <input class="input" type="number" name="edad"
+                                <div class="control has-icons-left">
+                                    <input class="input" type="number" name="edad" id="edad"
                                            placeholder="18-100" min="18" max="100" required>
+                                    <span class="icon is-left"><i class="fas fa-calendar"></i></span>
                                 </div>
+                                <p class="help is-danger" id="errorEdad"></p>
                             </div>
                         </div>
                         <div class="column">
                             <div class="field">
-                                <label class="label">País *</label>
-                                <div class="control">
+                                <label class="label">Pais *</label>
+                                <div class="control has-icons-left">
                                     <div class="select is-fullwidth">
-                                        <select name="pais" required>
-                                            <option value="" disabled selected>Selecciona un país</option>
+                                        <select name="pais" id="pais" required>
+                                            <option value="" disabled selected>Selecciona un pais</option>
                                             <option value="Argentina">Argentina</option>
                                             <option value="Bolivia">Bolivia</option>
                                             <option value="Brasil">Brasil</option>
@@ -62,7 +67,9 @@
                                             <option value="Venezuela">Venezuela</option>
                                         </select>
                                     </div>
+                                    <span class="icon is-left"><i class="fas fa-globe"></i></span>
                                 </div>
+                                <p class="help is-danger" id="errorPais"></p>
                             </div>
                         </div>
                     </div>
@@ -71,23 +78,32 @@
                         <label class="label">Nivel *</label>
                         <div class="control">
                             <div class="select is-fullwidth">
-                                <select name="nivel" required>
+                                <select name="nivel" id="nivel" required>
                                     <option value="" disabled selected>Selecciona un nivel</option>
-                                    <option value="principiante">🟢 Principiante</option>
-                                    <option value="intermedio">🔵 Intermedio</option>
-                                    <option value="profesional">🔴 Profesional</option>
+                                    <option value="principiante">Verde - Principiante</option>
+                                    <option value="intermedio">Azul - Intermedio</option>
+                                    <option value="profesional">Rojo - Profesional</option>
                                 </select>
                             </div>
                         </div>
+                        <p class="help is-danger" id="errorNivel"></p>
                     </div>
 
                     <div class="field">
                         <label class="label">Foto del jugador</label>
                         <div class="control">
-                            <input class="input" type="file" name="foto"
+                            <input class="input" type="file" name="foto" id="foto"
                                    accept="image/jpeg,image/png,image/webp">
                         </div>
-                        <p class="help">Formatos: JPG, PNG, WEBP</p>
+                        <p class="help">Formatos: JPG, PNG, WEBP. Max 5MB.</p>
+                        <p class="help is-danger" id="errorFoto"></p>
+                    </div>
+
+
+                    <div class="field" id="previewContainer" style="display:none">
+                        <figure class="image is-128x128">
+                            <img id="fotoPreview" class="is-rounded" style="width:128px;height:128px;object-fit:cover">
+                        </figure>
                     </div>
 
                     <div class="field is-grouped is-grouped-right mt-4">
@@ -95,7 +111,7 @@
                             <a href="/jugadores-pagina" class="button is-light">Cancelar</a>
                         </div>
                         <div class="control">
-                            <button type="submit" class="button btn-billar">
+                            <button type="submit" class="button btn-billar" id="btnSubmit">
                                 <span class="icon"><i class="fas fa-check"></i></span>
                                 <span>Registrar</span>
                             </button>
@@ -106,4 +122,113 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    document.getElementById('foto').addEventListener('change', function() {
+        const file = this.files[0];
+        const errorFoto = document.getElementById('errorFoto');
+        const preview = document.getElementById('fotoPreview');
+        const container = document.getElementById('previewContainer');
+
+        if (file) {
+
+            if (file.size > 5 * 1024 * 1024) {
+                errorFoto.textContent = 'La foto no puede superar 5MB';
+                this.value = '';
+                container.style.display = 'none';
+                return;
+            }
+            errorFoto.textContent = '';
+            const reader = new FileReader();
+            reader.onload = e => {
+                preview.src = e.target.result;
+                container.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+
+    document.getElementById('formJugador').addEventListener('submit', function(e) {
+        let valido = true;
+
+        // Validar nombre
+        const nombre = document.getElementById('nombre').value.trim();
+        const errorNombre = document.getElementById('errorNombre');
+        if (nombre.length < 2) {
+            errorNombre.textContent = 'El nombre debe tener al menos 2 caracteres';
+            document.getElementById('nombre').classList.add('is-danger');
+            valido = false;
+        } else if (/\d/.test(nombre)) {
+            errorNombre.textContent = 'El nombre no puede contener numeros';
+            document.getElementById('nombre').classList.add('is-danger');
+            valido = false;
+        } else {
+            errorNombre.textContent = '';
+            document.getElementById('nombre').classList.remove('is-danger');
+            document.getElementById('nombre').classList.add('is-success');
+        }
+
+
+        const edad = parseInt(document.getElementById('edad').value);
+        const errorEdad = document.getElementById('errorEdad');
+        if (isNaN(edad) || edad < 18 || edad > 100) {
+            errorEdad.textContent = 'La edad debe estar entre 18 y 100 anos';
+            document.getElementById('edad').classList.add('is-danger');
+            valido = false;
+        } else {
+            errorEdad.textContent = '';
+            document.getElementById('edad').classList.remove('is-danger');
+            document.getElementById('edad').classList.add('is-success');
+        }
+
+
+        const pais = document.getElementById('pais').value;
+        const errorPais = document.getElementById('errorPais');
+        if (!pais) {
+            errorPais.textContent = 'Debes seleccionar un pais';
+            valido = false;
+        } else {
+            errorPais.textContent = '';
+        }
+
+
+        const nivel = document.getElementById('nivel').value;
+        const errorNivel = document.getElementById('errorNivel');
+        if (!nivel) {
+            errorNivel.textContent = 'Debes seleccionar un nivel';
+            valido = false;
+        } else {
+            errorNivel.textContent = '';
+        }
+
+        if (!valido) {
+            e.preventDefault();
+        } else {
+
+            document.getElementById('btnSubmit').classList.add('is-loading');
+        }
+    });
+
+
+    document.getElementById('nombre').addEventListener('input', function() {
+        if (this.value.length >= 2 && !/\d/.test(this.value)) {
+            document.getElementById('errorNombre').textContent = '';
+            this.classList.remove('is-danger');
+            this.classList.add('is-success');
+        }
+    });
+
+    document.getElementById('edad').addEventListener('input', function() {
+        const val = parseInt(this.value);
+        if (val >= 18 && val <= 100) {
+            document.getElementById('errorEdad').textContent = '';
+            this.classList.remove('is-danger');
+            this.classList.add('is-success');
+        }
+    });
+</script>
 {% endblock %}

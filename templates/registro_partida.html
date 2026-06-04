@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Nueva Partida — Billar Pro{% endblock %}
+{% block title %}Nueva Partida - Billar Pro{% endblock %}
 
 {% block content %}
 <div class="columns is-centered">
@@ -10,12 +10,13 @@
                     <span class="icon"><i class="fas fa-gamepad"></i></span> Registrar Partida
                 </p>
 
-                <form method="post" action="/partidas">
+                <form method="post" action="/partidas" id="formPartida">
+
                     <div class="field">
                         <label class="label">Jugador 1 *</label>
                         <div class="control">
                             <div class="select is-fullwidth">
-                                <select name="jugador1_id" required>
+                                <select name="jugador1_id" id="jugador1" required>
                                     <option value="" disabled selected>Selecciona jugador 1</option>
                                     {% for j in jugadores %}
                                     <option value="{{ j.id }}">{{ j.nombre }} — {{ j.pais }}</option>
@@ -23,13 +24,14 @@
                                 </select>
                             </div>
                         </div>
+                        <p class="help is-danger" id="errorJ1"></p>
                     </div>
 
                     <div class="field">
                         <label class="label">Jugador 2 *</label>
                         <div class="control">
                             <div class="select is-fullwidth">
-                                <select name="jugador2_id" required>
+                                <select name="jugador2_id" id="jugador2" required>
                                     <option value="" disabled selected>Selecciona jugador 2</option>
                                     {% for j in jugadores %}
                                     <option value="{{ j.id }}">{{ j.nombre }} — {{ j.pais }}</option>
@@ -37,27 +39,31 @@
                                 </select>
                             </div>
                         </div>
+                        <p class="help is-danger" id="errorJ2"></p>
                     </div>
 
                     <div class="field">
                         <label class="label">Ganador *</label>
                         <div class="control">
                             <div class="select is-fullwidth">
-                                <select name="ganador_id" required>
-                                    <option value="" disabled selected>¿Quién ganó?</option>
+                                <select name="ganador_id" id="ganador" required>
+                                    <option value="" disabled selected>Quien gano?</option>
                                     {% for j in jugadores %}
                                     <option value="{{ j.id }}">{{ j.nombre }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                         </div>
+                        <p class="help is-danger" id="errorGanador"></p>
                     </div>
 
                     <div class="field">
                         <label class="label">Fecha *</label>
-                        <div class="control">
-                            <input class="input" type="date" name="fecha" required>
+                        <div class="control has-icons-left">
+                            <input class="input" type="date" name="fecha" id="fecha" required>
+                            <span class="icon is-left"><i class="fas fa-calendar"></i></span>
                         </div>
+                        <p class="help is-danger" id="errorFecha"></p>
                     </div>
 
                     <div class="field is-grouped is-grouped-right mt-4">
@@ -65,7 +71,7 @@
                             <a href="/partidas-pagina" class="button is-light">Cancelar</a>
                         </div>
                         <div class="control">
-                            <button type="submit" class="button btn-billar">
+                            <button type="submit" class="button btn-billar" id="btnSubmit">
                                 <span class="icon"><i class="fas fa-check"></i></span>
                                 <span>Registrar Partida</span>
                             </button>
@@ -76,4 +82,100 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+
+    const hoy = new Date().toISOString().split('T')[0];
+    document.getElementById('fecha').setAttribute('max', hoy);
+
+    document.getElementById('formPartida').addEventListener('submit', function(e) {
+        let valido = true;
+
+        const j1 = document.getElementById('jugador1').value;
+        const j2 = document.getElementById('jugador2').value;
+        const ganador = document.getElementById('ganador').value;
+        const fecha = document.getElementById('fecha').value;
+
+
+        if (!j1) {
+            document.getElementById('errorJ1').textContent = 'Debes seleccionar el jugador 1';
+            valido = false;
+        } else {
+            document.getElementById('errorJ1').textContent = '';
+        }
+
+
+        if (!j2) {
+            document.getElementById('errorJ2').textContent = 'Debes seleccionar el jugador 2';
+            valido = false;
+        } else {
+            document.getElementById('errorJ2').textContent = '';
+        }
+
+
+        if (j1 && j2 && j1 === j2) {
+            document.getElementById('errorJ2').textContent = 'El jugador 2 no puede ser el mismo que el jugador 1';
+            document.getElementById('jugador2').classList.add('is-danger');
+            valido = false;
+        } else if (j2) {
+            document.getElementById('jugador2').classList.remove('is-danger');
+        }
+
+
+        if (!ganador) {
+            document.getElementById('errorGanador').textContent = 'Debes seleccionar el ganador';
+            valido = false;
+        } else if (ganador !== j1 && ganador !== j2) {
+            document.getElementById('errorGanador').textContent = 'El ganador debe ser uno de los dos jugadores';
+            document.getElementById('ganador').classList.add('is-danger');
+            valido = false;
+        } else {
+            document.getElementById('errorGanador').textContent = '';
+            document.getElementById('ganador').classList.remove('is-danger');
+        }
+
+
+        if (!fecha) {
+            document.getElementById('errorFecha').textContent = 'Debes seleccionar una fecha';
+            valido = false;
+        } else if (fecha > hoy) {
+            document.getElementById('errorFecha').textContent = 'La fecha no puede ser futura';
+            document.getElementById('fecha').classList.add('is-danger');
+            valido = false;
+        } else {
+            document.getElementById('errorFecha').textContent = '';
+            document.getElementById('fecha').classList.remove('is-danger');
+        }
+
+        if (!valido) {
+            e.preventDefault();
+        } else {
+            document.getElementById('btnSubmit').classList.add('is-loading');
+        }
+    });
+
+
+    document.getElementById('jugador1').addEventListener('change', function() {
+        const j2 = document.getElementById('jugador2').value;
+        if (j2 && this.value === j2) {
+            document.getElementById('errorJ2').textContent = 'El jugador 2 no puede ser el mismo que el jugador 1';
+        } else {
+            document.getElementById('errorJ1').textContent = '';
+            document.getElementById('errorJ2').textContent = '';
+        }
+    });
+
+    document.getElementById('jugador2').addEventListener('change', function() {
+        const j1 = document.getElementById('jugador1').value;
+        if (j1 && this.value === j1) {
+            document.getElementById('errorJ2').textContent = 'El jugador 2 no puede ser el mismo que el jugador 1';
+            this.classList.add('is-danger');
+        } else {
+            document.getElementById('errorJ2').textContent = '';
+            this.classList.remove('is-danger');
+        }
+    });
+</script>
 {% endblock %}
