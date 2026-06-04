@@ -64,7 +64,7 @@ def buscar_por_nombre(nombre: str, session: Session):
 
 def buscar_por_pais(pais: str, session: Session):
     query = select(JugadorID).where(
-        JugadorID.pais.ilike(pais),
+        JugadorID.pais.ilike(f"%{pais}%"),
         JugadorID.activo == True
     )
     return session.exec(query).all()
